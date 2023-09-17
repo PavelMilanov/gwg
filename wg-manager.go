@@ -12,6 +12,9 @@ type WgServerConfig struct {
 	Eth        string
 }
 
+const SERVER_DIR = "/etc/wireguard/"
+const WG_MANAGER_DIR = SERVER_DIR + ".wg_manager"
+
 func main() {
 	switch os.Args[1] {
 	case "config":

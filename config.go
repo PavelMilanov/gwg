@@ -41,13 +41,15 @@ func configureServer() {
 	if alias_value == 0 {
 		alias = "wg0"
 	}
+	keyPath := fmt.Sprintf("%s/privatekey", WG_MANAGER_DIR)
+	key, _ := os.ReadFile(keyPath)
 	config := WgServerConfig{
-		ServerKey:  "test-private-key",
+		ServerKey:  string(key),
 		Address:    private_addr,
 		ListenPort: port,
 		Eth:        intf,
 	}
-	configFile := fmt.Sprintf("%s.conf", alias)
+	configFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	templ, err := template.ParseFiles("wg_template.conf")
 	file, err := os.OpenFile(configFile, os.O_CREATE|os.O_WRONLY, 0666)
 	err = templ.Execute(file, config)
