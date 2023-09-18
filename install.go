@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -16,22 +15,6 @@ type WgServerConfig struct {
 	Eth              string
 }
 
-type WgServerConfigFile struct {
-	PublicKey     string
-	PrivateKey    string
-	LocalAddress  string
-	PublicAddress string
-	ListenPort    int
-	Alias         string
-}
-
-func (config *WgServerConfigFile) createConfigFile() {
-	file, _ := json.MarshalIndent(config, "", " ")
-	os.Chdir(WG_MANAGER_DIR)
-	filename := fmt.Sprintf("%s.json", config.Alias)
-	_ = os.WriteFile(filename, file, 0644)
-}
-
 func installServer() {
 	/*
 		Основаня логика установки WG Server.
@@ -39,8 +22,8 @@ func installServer() {
 	updatePackage()
 	installWgServer()
 	os.Mkdir(WG_MANAGER_DIR, 0666)
-	generateKeys()
-	configureServer()
+	privKey, pubKey := generateKeys()
+	configureServer(privKey, pubKey)
 }
 func updatePackage() {
 	/*
@@ -62,18 +45,7 @@ func installWgServer() {
 	cmd.Run()
 }
 
-func generateKeys() {
-	/*
-		Генерация приватного и публичного ключей сервера и сохранение в файлы.
-	*/
-	os.Chdir(WG_MANAGER_DIR)
-	fmt.Println("Generate keys...")
-	cmd := exec.Command("bash", "-c", "wg genkey | tee privatekey | wg pubkey | tee publickey")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
-
-func configureServer() {
+func configureServer(priv string, pub string) {
 	/*
 		Создание шаблона конфигурационного файла сервера.
 	*/
@@ -84,7 +56,7 @@ func configureServer() {
 		alias        string
 	)
 	fmt.Println("Enter private network: 10.0.0.1/24")
-	private_addr_value, _ := fmt.Scanf("%s\n", &private_addr)
+	private_addr_value, _ := fmt.Scanf("%s\r", &private_addr)
 	if private_addr_value == 0 {
 		private_addr = "10.0.0.1/24"
 	} else {
@@ -95,27 +67,23 @@ func configureServer() {
 		}
 	}
 	fmt.Println("Enter listen port: 51830")
-	port_value, _ := fmt.Scanf("%d\n", &port)
+	port_value, _ := fmt.Scanf("%d\r", &port)
 	if port_value == 0 {
 		port = 51830
 	}
 	fmt.Println("Enter NAT-interface:")
-	intf_value, _ := fmt.Scanf("%s\n", &intf)
+	intf_value, _ := fmt.Scanf("%s\r", &intf)
 	if intf_value == 0 {
 		fmt.Println("Enter NAT-interface")
 		os.Exit(1)
 	}
 	fmt.Println("Enter alias: 'wg0'")
-	alias_value, _ := fmt.Scanf("%s\n", &alias)
+	alias_value, _ := fmt.Scanf("%s\r", &alias)
 	if alias_value == 0 {
 		alias = "wg0"
 	}
-	privatekeypath := fmt.Sprintf("%s/privatekey", WG_MANAGER_DIR)
-	publickeypath := fmt.Sprintf("%s/publickey", WG_MANAGER_DIR)
-	privatekey, _ := os.ReadFile(privatekeypath)
-	publickey, _ := os.ReadFile(publickeypath)
 	config := WgServerConfig{
-		ServerPrivateKey: string(privatekey),
+		ServerPrivateKey: priv,
 		LocalAddress:     private_addr,
 		ListenPort:       port,
 		Eth:              intf,
@@ -128,12 +96,12 @@ func configureServer() {
 		panic(err)
 	}
 	configFile := WgServerConfigFile{
-		PublicKey:    string(publickey),
-		PrivateKey:   string(privatekey),
+		PublicKey:    pub,
+		PrivateKey:   priv,
 		LocalAddress: private_addr,
 		ListenPort:   port,
 		Alias:        alias,
 	}
-	configFile.createConfigFile()
+	configFile.createServerConfigFile()
 	defer file.Close()
 }

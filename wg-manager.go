@@ -5,13 +5,16 @@ import (
 	"os"
 )
 
-const SERVER_DIR = "/etc/wireguard/"
-const WG_MANAGER_DIR = SERVER_DIR + ".wg_manager"
+const (
+	SERVER_DIR       = "/etc/wireguard/"
+	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
+	USERS_CONFIG_DIR = WG_MANAGER_DIR + ".configs"
+)
 
 func main() {
 	switch os.Args[1] {
 	case "config":
-		configureServer()
+		configureServer("test", "test1")
 	case "install":
 		installServer()
 	case "show":
