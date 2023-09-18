@@ -5,13 +5,6 @@ import (
 	"os"
 )
 
-type WgServerConfig struct {
-	ServerKey  string
-	Address    string
-	ListenPort int
-	Eth        string
-}
-
 const SERVER_DIR = "/etc/wireguard/"
 const WG_MANAGER_DIR = SERVER_DIR + ".wg_manager"
 
@@ -24,7 +17,7 @@ func main() {
 	case "show":
 		fmt.Println("show wg interfases")
 	case "add":
-		fmt.Println("add user")
+		addUSer()
 	case "remove":
 		fmt.Println("remove user")
 	}
