@@ -11,11 +11,10 @@ import (
 	"text/template"
 )
 
-// // Share functions
+/*
+Генерация приватного и публичного ключей.
+*/
 func generateKeys() (string, string) {
-	/*
-		Генерация приватного и публичного ключей.
-	*/
 	dir := os.TempDir()
 	os.Chdir(dir)
 	fmt.Println("Generate keys...")
@@ -28,10 +27,10 @@ func generateKeys() (string, string) {
 	return string(privatekey), string(publickey)
 }
 
+/*
+Динамическое назначение приватных ip-адресов клиентам.
+*/
 func setClientIp() string {
-	/*
-		Динамическое назначение приватных ip-адресов клиентам.
-	*/
 	configs := readClientConfigFiles()
 	label := "10.0.0.2/24"
 	var lastindex = 3 // так как первый ip 10.0.0.(2)
@@ -48,10 +47,10 @@ func setClientIp() string {
 	return label
 }
 
+/*
+Автопоиск интерфейса и ip для конфигурации сервера.
+*/
 func setServerParams() (string, string) {
-	/*
-		Автопоиск интерфейса и ip для конфигурации сервера.
-	*/
 	out, err := exec.Command("bash", "-c", "ip r").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -62,10 +61,10 @@ func setServerParams() (string, string) {
 	return ip, eth
 }
 
+/*
+Чтение конфигурациионного файла сервера.
+*/
 func readServerConfigFile() *WgServerConfig {
-	/*
-		Чтение конфигурациионного файла сервера.
-	*/
 	files, _ := os.ReadDir(WG_MANAGER_DIR)
 	config := &WgServerConfig{}
 	for _, file := range files {
@@ -78,10 +77,10 @@ func readServerConfigFile() *WgServerConfig {
 	return config
 }
 
+/*
+Чтение конфигурациионных файлов клиентов.
+*/
 func readClientConfigFiles() []*UserConfig {
-	/*
-		Чтение конфигурациионных файлов клиентов.
-	*/
 	files, _ := os.ReadDir(USERS_CONFIG_DIR)
 	config := &UserConfig{}
 	var configs []*UserConfig
@@ -96,11 +95,10 @@ func readClientConfigFiles() []*UserConfig {
 	return configs
 }
 
-// // add command
+/*
+Основная логика при вводе команды add.
+*/
 func addUSer() {
-	/*
-		Основная логика при вводе команды add.
-	*/
 	var alias string
 	fmt.Println("Enter client description:")
 	alias_value, _ := fmt.Scanf("%s", &alias)
@@ -129,41 +127,41 @@ func addUSer() {
 	defer file.Close()
 }
 
-// // install command
+/*
+Основная логика при вводе команды install.
+*/
 func installServer() {
-	/*
-		Основная логика при вводе команды install.
-	*/
 	updatePackage()
 	installWgServer()
 	os.Mkdir(WG_MANAGER_DIR, 0666)
 	privKey, pubKey := generateKeys()
 	configureServer(privKey, pubKey)
 }
+
+/*
+Обновление пакетов deb.
+*/
 func updatePackage() {
-	/*
-		Обновление пакетов deb.
-	*/
 	fmt.Println("Updating packages...")
 	cmd := exec.Command("apt", "update", "-y")
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 }
 
+/*
+Установка пакета wireguard.
+*/
 func installWgServer() {
-	/*
-		Установка пакета wireguard.
-	*/
 	fmt.Println("Installing WireGuard Server...")
 	cmd := exec.Command("apt", "install", "-y", "wireguard")
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 }
 
+/*
+Создание шаблона конфигурационного файла сервера.
+*/
 func configureServer(priv string, pub string) {
-	/*
-		Создание шаблона конфигурационного файла сервера.
-	*/
 	var (
 		private_addr string
 		port         int

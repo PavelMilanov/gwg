@@ -6,10 +6,10 @@ import (
 	"os"
 )
 
+/*
+Модель для конфигурационного файла (conf,json) сервера.
+*/
 type WgServerConfig struct {
-	/*
-		Модель для конфигурационного файла (conf,json) сервера.
-	*/
 	ServerPrivateKey string
 	ServerPublicKey  string
 	LocalAddress     string
@@ -20,19 +20,19 @@ type WgServerConfig struct {
 	Users            []string // for peer
 }
 
+/*
+Генерирует вспомогательный конфигурационый файл сервера для работы gwg.
+*/
 func (config *WgServerConfig) createServerConfigFile() {
-	/*
-		Генерирует вспомогательный конфигурационый файл сервера для работы gwg.
-	*/
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
 	_ = os.WriteFile(filename, file, 0644)
 }
 
+/*
+Модель для конфигурационных файлов (conf,json) клиентов.
+*/
 type UserConfig struct {
-	/*
-		Модель для конфигурационных файлов (conf,json) клиентов.
-	*/
 	ClientPrivateKey   string
 	ClientPublicKey    string
 	ClientLocalAddress string
@@ -41,10 +41,10 @@ type UserConfig struct {
 	ServerPort         int
 }
 
+/*
+Генерирует вспомогательный конфигурационый файл клиента для работы gwg.
+*/
 func (config *UserConfig) addConfigUser(fileName string) {
-	/*
-		Генерирует вспомогательный конфигурационый файл клиента для работы gwg.
-	*/
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
 	_ = os.WriteFile(filename, file, 0644)
