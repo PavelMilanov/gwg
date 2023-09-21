@@ -17,11 +17,11 @@ type WgServerConfig struct {
 	ListenPort       int
 	Eth              string
 	Alias            string
-	Users            []string // for peer
+	Users            []*UserConfig // for peer
 }
 
 /*
-Генерирует вспомогательный конфигурационый файл сервера для работы gwg.
+Генерирует вспомогательный конфигурационый файл (json) сервера для работы gwg.
 */
 func (config *WgServerConfig) createServerConfigFile() {
 	file, _ := json.MarshalIndent(config, "", " ")
@@ -42,7 +42,7 @@ type UserConfig struct {
 }
 
 /*
-Генерирует вспомогательный конфигурационый файл клиента для работы gwg.
+Генерирует вспомогательный конфигурационый файл (json) клиента для работы gwg.
 */
 func (config *UserConfig) addConfigUser(fileName string) {
 	file, _ := json.MarshalIndent(config, "", " ")

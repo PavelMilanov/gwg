@@ -3,62 +3,37 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
-	"os/exec"
 	"regexp"
-	"strings"
 	"text/template"
 )
 
 /*
-Генерация приватного и публичного ключей.
+Генерация конфигурационного файла (conf) сервера по шаблону.
 */
-func generateKeys() (string, string) {
-	dir := os.TempDir()
-	os.Chdir(dir)
-	fmt.Println("Generate keys...")
-	cmd := exec.Command("bash", "-c", "wg genkey | tee privatekey | wg pubkey | tee publickey")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-	privatekey, _ := os.ReadFile("privatekey")
-	publickey, _ := os.ReadFile("publickey")
-	defer os.RemoveAll(dir)
-	return string(privatekey), string(publickey)
-}
-
-/*
-Динамическое назначение приватных ip-адресов клиентам.
-*/
-func setClientIp() string {
-	configs := readClientConfigFiles()
-	label := "10.0.0.2/24"
-	var lastindex = 3 // так как первый ip 10.0.0.(2)
-	for index, config := range configs {
-		if label <= config.ClientLocalAddress {
-			label = fmt.Sprintf("10.0.0.%d/24", index+2)
-		}
-		lastindex += index
-	}
-	// если нет пропущенных адресов, выдаем следующий по списку
-	if len(configs) > 1 && label == configs[len(configs)-1].ClientLocalAddress {
-		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
-	}
-	return label
-}
-
-/*
-Автопоиск интерфейса и ip для конфигурации сервера.
-*/
-func setServerParams() (string, string) {
-	out, err := exec.Command("bash", "-c", "ip r").Output()
+func writeServerConfig(config *WgServerConfig, filename string) {
+	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
+	templ, err := template.ParseFiles("./wg_template.conf")
+	file, err := os.OpenFile(serverFile, os.O_CREATE|os.O_WRONLY, 0666)
+	err = templ.Execute(file, config)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	defaultRoute := strings.Split(string(out), " ")[:9] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404"
-	ip := defaultRoute[2]
-	eth := defaultRoute[4]
-	return ip, eth
+	defer file.Close()
+}
+
+/*
+Генерация конфигурационного файла (conf) клиента по шаблону.
+*/
+func writeClientConfig(config *UserConfig, filename string) {
+	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
+	clientTemplate, err := template.ParseFiles("./client_template.conf")
+	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0666)
+	err = clientTemplate.Execute(file, config)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 }
 
 /*
@@ -116,15 +91,11 @@ func addUSer() {
 		ServerIp:           server.PublicAddress,
 		ServerPort:         server.ListenPort,
 	}
-	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, alias)
-	templ, err := template.ParseFiles("./client_template.conf")
-	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0666)
-	err = templ.Execute(file, config)
-	if err != nil {
-		panic(err)
-	}
 	config.addConfigUser(alias)
-	defer file.Close()
+	writeClientConfig(&config, alias)
+	users := readClientConfigFiles()
+	server.Users = users
+	writeServerConfig(server, "wg0") // заменить
 }
 
 /*
@@ -136,26 +107,6 @@ func installServer() {
 	os.Mkdir(WG_MANAGER_DIR, 0666)
 	privKey, pubKey := generateKeys()
 	configureServer(privKey, pubKey)
-}
-
-/*
-Обновление пакетов deb.
-*/
-func updatePackage() {
-	fmt.Println("Updating packages...")
-	cmd := exec.Command("apt", "update", "-y")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
-
-/*
-Установка пакета wireguard.
-*/
-func installWgServer() {
-	fmt.Println("Installing WireGuard Server...")
-	cmd := exec.Command("apt", "install", "-y", "wireguard")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
 }
 
 /*
@@ -200,13 +151,6 @@ func configureServer(priv string, pub string) {
 		Eth:              intf,
 		Alias:            alias,
 	}
-	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
-	templ, err := template.ParseFiles("./wg_template.conf")
-	file, err := os.OpenFile(serverFile, os.O_CREATE|os.O_WRONLY, 0666)
-	err = templ.Execute(file, config)
-	if err != nil {
-		panic(err)
-	}
+	writeServerConfig(&config, alias)
 	config.createServerConfigFile()
-	defer file.Close()
 }
