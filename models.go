@@ -14,6 +14,7 @@ type WgServerConfig struct {
 	ListenPort       int
 	Eth              string
 	Alias            string
+	Users            []string
 }
 
 func (config *WgServerConfig) createServerConfigFile() {

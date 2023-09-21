@@ -24,5 +24,7 @@ func main() {
 		addUSer()
 	case "remove":
 		fmt.Println("remove user")
+	case "test":
+		setServerParams()
 	}
 }

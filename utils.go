@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 	"text/template"
 )
 
@@ -41,6 +43,17 @@ func setClientIp() string {
 		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
 	}
 	return label
+}
+
+func setServerParams() (string, string) {
+	out, err := exec.Command("bash", "-c", "ip r").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defaultRoute := strings.Split(string(out), " ")[:9] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404"
+	ip := defaultRoute[2]
+	eth := defaultRoute[4]
+	return ip, eth
 }
 
 func readServerConfigFile() *WgServerConfig {
@@ -143,6 +156,7 @@ func configureServer(priv string, pub string) {
 		alias        string
 		public_addr  string
 	)
+	public_addr, intf = setServerParams()
 	fmt.Println("Enter private network: 10.0.0.1/24")
 	private_addr_value, _ := fmt.Scanf("%s\r", &private_addr)
 	if private_addr_value == 0 {
@@ -158,24 +172,6 @@ func configureServer(priv string, pub string) {
 	port_value, _ := fmt.Scanf("%d\r", &port)
 	if port_value == 0 {
 		port = 51830
-	}
-	fmt.Println("Enter NAT-interface:")
-	intf_value, _ := fmt.Scanf("%s\r", &intf)
-	if intf_value == 0 {
-		fmt.Println("Enter NAT-interface")
-		os.Exit(1)
-	}
-	fmt.Println("Enter IP-address:")
-	public_addr_value, _ := fmt.Scanf("%s\r", &public_addr)
-	if public_addr_value == 0 {
-		fmt.Println("Enter IP-address")
-		os.Exit(1)
-	} else {
-		isValid, _ := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`, public_addr)
-		if !isValid {
-			fmt.Println("Enter valid value. Example: 100.0.0.1")
-			os.Exit(1)
-		}
 	}
 	fmt.Println("Enter alias: 'wg0'")
 	alias_value, _ := fmt.Scanf("%s\r", &alias)
