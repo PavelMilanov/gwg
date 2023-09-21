@@ -8,13 +8,6 @@ import (
 	"text/template"
 )
 
-type WgServerConfig struct {
-	ServerPrivateKey string
-	LocalAddress     string
-	ListenPort       int
-	Eth              string
-}
-
 func installServer() {
 	/*
 		Основаня логика установки WG Server.
@@ -54,6 +47,7 @@ func configureServer(priv string, pub string) {
 		port         int
 		intf         string
 		alias        string
+		public_addr  string
 	)
 	fmt.Println("Enter private network: 10.0.0.1/24")
 	private_addr_value, _ := fmt.Scanf("%s\r", &private_addr)
@@ -77,6 +71,18 @@ func configureServer(priv string, pub string) {
 		fmt.Println("Enter NAT-interface")
 		os.Exit(1)
 	}
+	fmt.Println("Enter IP-address:")
+	public_addr_value, _ := fmt.Scanf("%s\r", &public_addr)
+	if public_addr_value == 0 {
+		fmt.Println("Enter IP-address")
+		os.Exit(1)
+	} else {
+		isValid, _ := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`, public_addr)
+		if !isValid {
+			fmt.Println("Enter valid value. Example: 100.0.0.1")
+			os.Exit(1)
+		}
+	}
 	fmt.Println("Enter alias: 'wg0'")
 	alias_value, _ := fmt.Scanf("%s\r", &alias)
 	if alias_value == 0 {
@@ -84,24 +90,20 @@ func configureServer(priv string, pub string) {
 	}
 	config := WgServerConfig{
 		ServerPrivateKey: priv,
+		ServerPublicKey:  pub,
 		LocalAddress:     private_addr,
+		PublicAddress:    public_addr,
 		ListenPort:       port,
 		Eth:              intf,
+		Alias:            alias,
 	}
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
-	templ, err := template.ParseFiles("wg_template.conf")
+	templ, err := template.ParseFiles("./wg_template.conf")
 	file, err := os.OpenFile(serverFile, os.O_CREATE|os.O_WRONLY, 0666)
 	err = templ.Execute(file, config)
 	if err != nil {
 		panic(err)
 	}
-	configFile := WgServerConfigFile{
-		PublicKey:    pub,
-		PrivateKey:   priv,
-		LocalAddress: private_addr,
-		ListenPort:   port,
-		Alias:        alias,
-	}
-	configFile.createServerConfigFile()
+	config.createServerConfigFile()
 	defer file.Close()
 }

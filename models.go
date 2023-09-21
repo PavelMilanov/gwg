@@ -6,24 +6,25 @@ import (
 	"os"
 )
 
-type WgServerConfigFile struct {
-	PublicKey     string
-	PrivateKey    string
-	LocalAddress  string
-	PublicAddress string
-	ListenPort    int
-	Alias         string
+type WgServerConfig struct {
+	ServerPrivateKey string
+	ServerPublicKey  string
+	LocalAddress     string
+	PublicAddress    string
+	ListenPort       int
+	Eth              string
+	Alias            string
 }
 
-func (config *WgServerConfigFile) createServerConfigFile() {
+func (config *WgServerConfig) createServerConfigFile() {
 	file, _ := json.MarshalIndent(config, "", " ")
-	os.Chdir(WG_MANAGER_DIR)
-	filename := fmt.Sprintf("%s.json", config.Alias)
+	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
 	_ = os.WriteFile(filename, file, 0644)
 }
 
 type UserConfig struct {
 	ClientPrivateKey   string
+	ClientPublicKey    string
 	ClientLocalAddress string
 	ServerPublicKey    string
 	ServerIp           string
@@ -32,8 +33,6 @@ type UserConfig struct {
 
 func (config *UserConfig) addConfigUser(fileName string) {
 	file, _ := json.MarshalIndent(config, "", " ")
-	fmt.Println("Enter client description:")
-	os.Chdir(USERS_CONFIG_DIR)
-	filename := fmt.Sprintf("%s.json", fileName)
+	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
 	_ = os.WriteFile(filename, file, 0644)
 }

@@ -7,8 +7,9 @@ import (
 
 const (
 	SERVER_DIR       = "/etc/wireguard/"
-	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
-	USERS_CONFIG_DIR = WG_MANAGER_DIR + ".configs"
+	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager" // необходимо создать
+	USERS_CONFIG_DIR = SERVER_DIR + ".configs"    // необходимо создать
+	USERS_DIR        = SERVER_DIR + "users"       // необходимо создать
 )
 
 func main() {
