@@ -14,7 +14,7 @@ type WgServerConfig struct {
 	ListenPort       int
 	Eth              string
 	Alias            string
-	Users            []string
+	Users            []string // for peer
 }
 
 func (config *WgServerConfig) createServerConfigFile() {
