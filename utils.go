@@ -9,6 +9,7 @@ import (
 	"text/template"
 )
 
+// // Share functions
 func generateKeys() (string, string) {
 	/*
 		Генерация приватного и публичного ключей.
@@ -23,6 +24,23 @@ func generateKeys() (string, string) {
 	publickey, _ := os.ReadFile("publickey")
 	defer os.RemoveAll(dir)
 	return string(privatekey), string(publickey)
+}
+
+func setClientIp() string {
+	configs := readClientConfigFiles()
+	label := "10.0.0.2/24"
+	var lastindex = 3 // так как первый ip 10.0.0.(2)
+	for index, config := range configs {
+		if label <= config.ClientLocalAddress {
+			label = fmt.Sprintf("10.0.0.%d/24", index+2)
+		}
+		lastindex += index
+	}
+	// если нет пропущенных адресов, выдаем следующий по списку
+	if len(configs) > 1 && label == configs[len(configs)-1].ClientLocalAddress {
+		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
+	}
+	return label
 }
 
 func readServerConfigFile() *WgServerConfig {
@@ -53,6 +71,7 @@ func readClientConfigFiles() []*UserConfig {
 	return configs
 }
 
+// // add command
 func addUSer() {
 	var alias string
 	fmt.Println("Enter client description:")
@@ -82,23 +101,7 @@ func addUSer() {
 	defer file.Close()
 }
 
-func setClientIp() string {
-	configs := readClientConfigFiles()
-	label := "10.0.0.2/24"
-	var lastindex = 3 // так как первый ip 10.0.0.(2)
-	for index, config := range configs {
-		if label <= config.ClientLocalAddress {
-			label = fmt.Sprintf("10.0.0.%d/24", index+2)
-		}
-		lastindex += index
-	}
-	// если нет пропущенных адресов, выдаем следующий по списку
-	if len(configs) > 1 && label == configs[len(configs)-1].ClientLocalAddress {
-		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
-	}
-	return label
-}
-
+// // install command
 func installServer() {
 	/*
 		Основаня логика установки WG Server.
