@@ -29,6 +29,9 @@ func generateKeys() (string, string) {
 }
 
 func setClientIp() string {
+	/*
+		Динамическое назначение приватных ip-адресов клиентам.
+	*/
 	configs := readClientConfigFiles()
 	label := "10.0.0.2/24"
 	var lastindex = 3 // так как первый ip 10.0.0.(2)
@@ -46,6 +49,9 @@ func setClientIp() string {
 }
 
 func setServerParams() (string, string) {
+	/*
+		Автопоиск интерфейса и ip для конфигурации сервера.
+	*/
 	out, err := exec.Command("bash", "-c", "ip r").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -57,6 +63,9 @@ func setServerParams() (string, string) {
 }
 
 func readServerConfigFile() *WgServerConfig {
+	/*
+		Чтение конфигурациионного файла сервера.
+	*/
 	files, _ := os.ReadDir(WG_MANAGER_DIR)
 	config := &WgServerConfig{}
 	for _, file := range files {
@@ -70,6 +79,9 @@ func readServerConfigFile() *WgServerConfig {
 }
 
 func readClientConfigFiles() []*UserConfig {
+	/*
+		Чтение конфигурациионных файлов клиентов.
+	*/
 	files, _ := os.ReadDir(USERS_CONFIG_DIR)
 	config := &UserConfig{}
 	var configs []*UserConfig
@@ -86,6 +98,9 @@ func readClientConfigFiles() []*UserConfig {
 
 // // add command
 func addUSer() {
+	/*
+		Основная логика при вводе команды add.
+	*/
 	var alias string
 	fmt.Println("Enter client description:")
 	alias_value, _ := fmt.Scanf("%s", &alias)
@@ -117,7 +132,7 @@ func addUSer() {
 // // install command
 func installServer() {
 	/*
-		Основаня логика установки WG Server.
+		Основная логика при вводе команды install.
 	*/
 	updatePackage()
 	installWgServer()

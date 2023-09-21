@@ -15,7 +15,7 @@ const (
 func main() {
 	switch os.Args[1] {
 	case "config":
-		configureServer("test", "test1")
+		configureServer("test", "test1") // for dev
 	case "install":
 		installServer()
 	case "show":
@@ -24,7 +24,5 @@ func main() {
 		addUSer()
 	case "remove":
 		fmt.Println("remove user")
-	case "test":
-		setServerParams()
 	}
 }
