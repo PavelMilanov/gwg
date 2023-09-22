@@ -8,12 +8,17 @@ import (
 	"text/template"
 )
 
+const (
+	SERVER_TEMPLATE = "./wg_template.conf"
+	CLIENT_TEMPLATE = "./client_template.conf"
+)
+
 /*
 Генерация конфигурационного файла (conf) сервера по шаблону.
 */
 func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
-	templ, err := template.ParseFiles("./wg_template.conf")
+	templ, err := template.ParseFiles(SERVER_TEMPLATE)
 	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY, 0666)
 	err = templ.Execute(file, config)
 	if err != nil {
@@ -27,7 +32,7 @@ func writeServerConfig(config WgServerConfig, filename string) {
 */
 func writeClientConfig(config UserConfig, filename string) {
 	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
-	clientTemplate, err := template.ParseFiles("./client_template.conf")
+	clientTemplate, err := template.ParseFiles(CLIENT_TEMPLATE)
 	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0666)
 	err = clientTemplate.Execute(file, config)
 	if err != nil {

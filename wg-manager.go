@@ -12,6 +12,10 @@ const (
 	USERS_DIR        = SERVER_DIR + "users"       // необходимо создать
 )
 
+func init() {
+	initSystem()
+}
+
 func main() {
 	switch os.Args[1] {
 	case "config":

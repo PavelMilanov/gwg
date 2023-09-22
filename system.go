@@ -5,11 +5,24 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
+/*
+Проверка операционной системы на совместимость.
+*/
 func initSystem() {
-
+	out, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	isValid, _ := regexp.MatchString(`ID_LIKE=debian`, string(out))
+	if !isValid {
+		fmt.Println("This OS not supported")
+		os.Exit(1)
+	}
 }
 
 /*
