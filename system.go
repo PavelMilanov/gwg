@@ -26,7 +26,7 @@ func setClientIp() string {
 		lastindex += index
 	}
 	// если нет пропущенных адресов, выдаем следующий по списку
-	if len(configs) > 1 && label == configs[len(configs)-1].ClientLocalAddress {
+	if len(configs) > 0 && label == configs[len(configs)-1].ClientLocalAddress {
 		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
 	}
 	return label
@@ -60,16 +60,6 @@ func generateKeys() (string, string) {
 	publickey, _ := os.ReadFile("publickey")
 	defer os.RemoveAll(dir)
 	return string(privatekey), string(publickey)
-}
-
-/*
-Обновление пакетов deb.
-*/
-func updatePackage() {
-	fmt.Println("Updating packages...")
-	cmd := exec.Command("apt", "update", "-y")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
 }
 
 /*

@@ -17,7 +17,7 @@ type WgServerConfig struct {
 	ListenPort       int
 	Eth              string
 	Alias            string
-	Users            []*UserConfig // for peer
+	Users            []UserConfig // for peer
 }
 
 /*
@@ -39,6 +39,7 @@ type UserConfig struct {
 	ServerPublicKey    string
 	ServerIp           string
 	ServerPort         int
+	Name               string
 }
 
 /*

@@ -11,7 +11,7 @@ import (
 /*
 Генерация конфигурационного файла (conf) сервера по шаблону.
 */
-func writeServerConfig(config *WgServerConfig, filename string) {
+func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
 	templ, err := template.ParseFiles("./wg_template.conf")
 	file, err := os.OpenFile(serverFile, os.O_CREATE|os.O_WRONLY, 0666)
@@ -25,7 +25,7 @@ func writeServerConfig(config *WgServerConfig, filename string) {
 /*
 Генерация конфигурационного файла (conf) клиента по шаблону.
 */
-func writeClientConfig(config *UserConfig, filename string) {
+func writeClientConfig(config UserConfig, filename string) {
 	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
 	clientTemplate, err := template.ParseFiles("./client_template.conf")
 	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0666)
@@ -39,9 +39,9 @@ func writeClientConfig(config *UserConfig, filename string) {
 /*
 Чтение конфигурациионного файла сервера.
 */
-func readServerConfigFile() *WgServerConfig {
+func readServerConfigFile() WgServerConfig {
 	files, _ := os.ReadDir(WG_MANAGER_DIR)
-	config := &WgServerConfig{}
+	config := WgServerConfig{}
 	for _, file := range files {
 		content, err := os.ReadFile(WG_MANAGER_DIR + "/" + file.Name())
 		if err != nil {
@@ -55,10 +55,10 @@ func readServerConfigFile() *WgServerConfig {
 /*
 Чтение конфигурациионных файлов клиентов.
 */
-func readClientConfigFiles() []*UserConfig {
+func readClientConfigFiles() []UserConfig {
 	files, _ := os.ReadDir(USERS_CONFIG_DIR)
-	config := &UserConfig{}
-	var configs []*UserConfig
+	config := UserConfig{}
+	var configs []UserConfig
 	for _, file := range files {
 		content, err := os.ReadFile(USERS_CONFIG_DIR + "/" + file.Name())
 		if err != nil {
@@ -90,19 +90,19 @@ func addUSer() {
 		ServerPublicKey:    server.ServerPublicKey,
 		ServerIp:           server.PublicAddress,
 		ServerPort:         server.ListenPort,
+		Name:               alias,
 	}
 	config.addConfigUser(alias)
-	writeClientConfig(&config, alias)
+	writeClientConfig(config, alias)
 	users := readClientConfigFiles()
 	server.Users = users
-	writeServerConfig(server, "wg0") // заменить
+	writeServerConfig(server, server.Alias)
 }
 
 /*
 Основная логика при вводе команды install.
 */
 func installServer() {
-	updatePackage()
 	installWgServer()
 	os.Mkdir(WG_MANAGER_DIR, 0666)
 	privKey, pubKey := generateKeys()
@@ -151,6 +151,6 @@ func configureServer(priv string, pub string) {
 		Eth:              intf,
 		Alias:            alias,
 	}
-	writeServerConfig(&config, alias)
+	writeServerConfig(config, alias)
 	config.createServerConfigFile()
 }
