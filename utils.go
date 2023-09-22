@@ -14,7 +14,7 @@ import (
 func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
 	templ, err := template.ParseFiles("./wg_template.conf")
-	file, err := os.OpenFile(serverFile, os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY, 0666)
 	err = templ.Execute(file, config)
 	if err != nil {
 		panic(err)
@@ -71,15 +71,9 @@ func readClientConfigFiles() []UserConfig {
 }
 
 /*
-Основная логика при вводе команды add.
+Добавление пользователя.
 */
-func addUSer() {
-	var alias string
-	fmt.Println("Enter client description:")
-	alias_value, _ := fmt.Scanf("%s", &alias)
-	if alias_value == 0 {
-		os.Exit(1)
-	}
+func addUSer(alias string) {
 	clientPrivKey, clientPubKey := generateKeys()
 	clientip := setClientIp()
 	server := readServerConfigFile()
@@ -100,24 +94,45 @@ func addUSer() {
 }
 
 /*
-Основная логика при вводе команды install.
+Удаление пользователя.
 */
-func installServer() {
+func removeUser(alias string) {
+	server := readServerConfigFile()
+	configfile := fmt.Sprintf("%s/%s.conf", USERS_DIR, alias)
+	jsonfile := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, alias)
+	configs := []string{configfile, jsonfile}
+	for _, file := range configs {
+		err := os.Remove(file)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+	users := readClientConfigFiles()
+	server.Users = users
+	writeServerConfig(server, server.Alias)
+}
+
+/*
+Установка Wireguard сервера.
+*/
+func installServer(alias string) {
 	installWgServer()
+	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
+	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0666)
 	privKey, pubKey := generateKeys()
-	configureServer(privKey, pubKey)
+	configureServer(privKey, pubKey, alias)
 }
 
 /*
 Создание шаблона конфигурационного файла сервера.
 */
-func configureServer(priv string, pub string) {
+func configureServer(priv string, pub string, alias string) {
 	var (
 		private_addr string
 		port         int
 		intf         string
-		alias        string
 		public_addr  string
 	)
 	public_addr, intf = setServerParams()
@@ -136,11 +151,6 @@ func configureServer(priv string, pub string) {
 	port_value, _ := fmt.Scanf("%d\r", &port)
 	if port_value == 0 {
 		port = 51830
-	}
-	fmt.Println("Enter alias: 'wg0'")
-	alias_value, _ := fmt.Scanf("%s\r", &alias)
-	if alias_value == 0 {
-		alias = "wg0"
 	}
 	config := WgServerConfig{
 		ServerPrivateKey: priv,
