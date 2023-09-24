@@ -74,13 +74,3 @@ func generateKeys() (string, string) {
 	defer os.RemoveAll(dir)
 	return string(privatekey), string(publickey)
 }
-
-/*
-Установка пакета wireguard.
-*/
-func installWgServer() {
-	fmt.Println("Installing WireGuard Server...")
-	cmd := exec.Command("apt", "install", "-y", "wireguard")
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-}
