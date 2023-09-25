@@ -19,7 +19,7 @@ func init() {
 func main() {
 	switch os.Args[1] {
 	case "config":
-		configureServer("test", "test1", "wg0") // for dev
+		configureServer("private", "publick", "wg0") // for dev
 	case "install":
 		var alias string
 		fmt.Println("Enter alias: 'wg0'")

@@ -69,8 +69,10 @@ func generateKeys() (string, string) {
 	cmd := exec.Command("bash", "-c", "wg genkey | tee privatekey | wg pubkey | tee publickey")
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	privatekey, _ := os.ReadFile("privatekey")
-	publickey, _ := os.ReadFile("publickey")
+	privatekeyToFile, _ := os.ReadFile("privatekey")
+	publickeyToFile, _ := os.ReadFile("publickey")
+	privatekey := strings.TrimRight(string(privatekeyToFile), "\n")
+	publickey := strings.TrimRight(string(publickeyToFile), "\n")
 	defer os.RemoveAll(dir)
-	return string(privatekey), string(publickey)
+	return privatekey, publickey
 }
