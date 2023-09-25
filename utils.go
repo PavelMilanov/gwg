@@ -19,7 +19,8 @@ const (
 func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
 	templ, err := template.ParseFiles(SERVER_TEMPLATE)
-	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY, 0764)
+	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0764)
+	fmt.Println(file, config)
 	err = templ.Execute(file, config)
 	if err != nil {
 		panic(err)
