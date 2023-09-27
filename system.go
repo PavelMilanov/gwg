@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"strings"
@@ -47,10 +48,31 @@ func setServerParams() (string, string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defaultRoute := strings.Split(string(out), " ")[:9] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404"
+	var serverIp, serverIntf string
+	defaultRoute := strings.Split(string(out), " ")[:5] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404 ..."
 	ip := defaultRoute[2]
-	eth := defaultRoute[4]
-	return ip, eth
+	gate4 := net.ParseIP(ip)
+	serverIntf = defaultRoute[4]
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, interf := range interfaces {
+		// Список адресов для каждого сетевого интерфейса
+		addrs, err := interf.Addrs()
+		if err != nil {
+			panic(err)
+		}
+		for _, addr := range addrs {
+			data := addr.String()
+			ip, ipnet, _ := net.ParseCIDR(data)
+			if ipnet.Contains(gate4) {
+				serverIp = ip.String()
+			}
+		}
+	}
+	return serverIp, serverIntf
 }
 
 /*
