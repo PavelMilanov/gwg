@@ -29,7 +29,7 @@ func main() {
 		}
 		installServer(alias)
 	case "show":
-		fmt.Println("show wg interfases")
+		showPeers()
 	case "add":
 		var alias string
 		fmt.Println("Enter client name:")

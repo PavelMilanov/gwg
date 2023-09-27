@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
@@ -13,14 +12,9 @@ import (
 Проверка операционной системы на совместимость.
 */
 func initSystem() {
-	out, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
+	_, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
-	}
-	isValid, _ := regexp.MatchString(`ID_LIKE=debian`, string(out))
-	if !isValid {
-		fmt.Println("This OS not supported")
 		os.Exit(1)
 	}
 }
@@ -75,4 +69,12 @@ func generateKeys() (string, string) {
 	publickey := strings.TrimRight(string(publickeyToFile), "\n")
 	defer os.RemoveAll(dir)
 	return privatekey, publickey
+}
+
+func showPeers() {
+	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(out)
 }
