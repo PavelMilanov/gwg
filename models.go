@@ -26,7 +26,7 @@ type WgServerConfig struct {
 func (config *WgServerConfig) createServerConfigFile() {
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
-	_ = os.WriteFile(filename, file, 0644)
+	_ = os.WriteFile(filename, file, 0660)
 }
 
 /*
@@ -48,5 +48,5 @@ type UserConfig struct {
 func (config *UserConfig) addConfigUser(fileName string) {
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
-	_ = os.WriteFile(filename, file, 0644)
+	_ = os.WriteFile(filename, file, 0660)
 }

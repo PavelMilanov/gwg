@@ -19,10 +19,12 @@ const (
 func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
 	templ, err := template.ParseFiles(SERVER_TEMPLATE)
-	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0764)
+	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
 	err = templ.Execute(file, config)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Remove(serverFile)
+		os.Exit(1)
 	}
 	fmt.Println("Done writing server config")
 	defer file.Close()
@@ -34,10 +36,12 @@ func writeServerConfig(config WgServerConfig, filename string) {
 func writeClientConfig(config UserConfig, filename string) {
 	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
 	clientTemplate, err := template.ParseFiles(CLIENT_TEMPLATE)
-	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0764)
+	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0660)
 	err = clientTemplate.Execute(file, config)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Remove(clientFile)
+		os.Exit(1)
 	}
 	fmt.Println("Done writing client config")
 	defer file.Close()
@@ -126,7 +130,7 @@ func removeUser(alias string) {
 func installServer(alias string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
-	os.Mkdir(WG_MANAGER_DIR, 0666)
+	os.Mkdir(WG_MANAGER_DIR, 0660)
 	privKey, pubKey := generateKeys()
 	configureServer(privKey, pubKey, alias)
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -46,7 +45,7 @@ func setClientIp() string {
 func setServerParams() (string, string) {
 	out, err := exec.Command("bash", "-c", "ip r").Output()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	var serverIp, serverIntf string
 	defaultRoute := strings.Split(string(out), " ")[:5] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404 ..."
@@ -96,7 +95,7 @@ func generateKeys() (string, string) {
 func showPeers() {
 	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	fmt.Println(string(out))
 }
