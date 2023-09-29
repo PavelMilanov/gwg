@@ -92,10 +92,28 @@ func generateKeys() (string, string) {
 	return privatekey, publickey
 }
 
+/*
+Просмотр статистики wg.
+*/
 func showPeers() {
 	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(string(out))
+}
+
+/*
+Перезапуск службы wg.
+*/
+func restartServer() {
+	server := readServerConfigFile()
+	command := fmt.Sprintf("sudo systemctl status wg-quick@%s.service", server.Alias)
+	out, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	fmt.Println(string(out))
 }

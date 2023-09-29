@@ -102,6 +102,7 @@ func addUSer(alias string) {
 	users := readClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
+	restartServer()
 }
 
 /*
@@ -122,6 +123,7 @@ func removeUser(alias string) {
 	users := readClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
+	restartServer()
 }
 
 /*
