@@ -50,3 +50,12 @@ func (config *UserConfig) addConfigUser(fileName string) {
 	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
 	_ = os.WriteFile(filename, file, 0660)
 }
+
+/*
+Модель для парсинга данных из wg show dump.
+*/
+type WireguardDump struct {
+	user   string
+	rateRx int
+	rateTx int
+}

@@ -46,5 +46,7 @@ func main() {
 			os.Exit(1)
 		}
 		removeUser(alias)
+	case "stat":
+		readWgDump()
 	}
 }

@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
+	"strconv"
+	"strings"
 	"text/template"
 )
 
@@ -175,4 +178,47 @@ func configureServer(priv string, pub string, alias string) {
 	}
 	writeServerConfig(config, alias)
 	config.createServerConfigFile()
+}
+
+/*
+Парсинг и преобразование данных из wg show dump
+*/
+func readWgDump() {
+	// sudo wg show wg0 dump | wc -l = x - узнаем сколько строк в фале
+	// sed -n '2,x' - выводим все, кроме 1ой
+	// sed -n 'xp' - выводим определенную строку
+	// command := fmt.Sprintf("wc -l dump.log")
+	command := fmt.Sprintf("sudo wg show wg0 dump | wc -l")
+	out, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	count, err := strconv.Atoi(strings.Split(string(out), " ")[0]) // [8 dump.log]
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	pool := []WireguardDump{}
+	for i := 2; i < count+1; i++ {
+		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
+		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
+		out, err := exec.Command("bash", "-c", command).Output()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
+		user := data[0]                          // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
+		rateRx, err := strconv.Atoi(data[5])     // 816
+		rateTx, err := strconv.Atoi(data[6])     // 3776
+		pool = append(pool, WireguardDump{
+			user:   user,
+			rateRx: rateRx,
+			rateTx: rateTx})
+	}
+	for idx, line := range pool {
+		text := fmt.Sprintf("%d) User: %s, RateRx: %d, RateTx: %d", idx+1, line.user, line.rateRx, line.rateTx)
+		fmt.Println(text)
+	}
 }
