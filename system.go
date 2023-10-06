@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+const (
+	SERVER_DIR       = "/etc/wireguard/"
+	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
+	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
+	USERS_DIR        = SERVER_DIR + "users"
+)
+
 /*
 Проверка операционной системы на совместимость.
 */
@@ -17,6 +24,21 @@ func initSystem() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+/*
+Создает рабочие директории.
+*/
+func createProjectDirs() {
+	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
+	for _, dir := range dirs {
+		err := os.MkdirAll(SERVER_DIR+dir, 0660)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+	fmt.Println("Working diretories created")
 }
 
 /*

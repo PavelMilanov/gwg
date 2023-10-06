@@ -133,6 +133,7 @@ func removeUser(alias string) {
 Установка Wireguard сервера.
 */
 func installServer(alias string) {
+	createProjectDirs()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0660)

@@ -5,23 +5,16 @@ import (
 	"os"
 )
 
-const (
-	SERVER_DIR       = "/etc/wireguard/"
-	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager" // необходимо создать
-	USERS_CONFIG_DIR = SERVER_DIR + ".configs"    // необходимо создать
-	USERS_DIR        = SERVER_DIR + "users"       // необходимо создать
-)
-
 func init() {
 	initSystem()
 }
 
 func main() {
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		fmt.Printf(MENU)
-	// 	}
-	// }()
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf(MENU)
+		}
+	}()
 	switch os.Args[1] {
 	case "config":
 		configureServer("private", "publick", "wg0") // for dev
