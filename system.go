@@ -32,7 +32,7 @@ func initSystem() {
 func createProjectDirs() {
 	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
 	for _, dir := range dirs {
-		err := os.MkdirAll(SERVER_DIR+dir, 0660)
+		err := os.MkdirAll(SERVER_DIR+dir, 0764)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
