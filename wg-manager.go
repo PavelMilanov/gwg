@@ -38,7 +38,6 @@ func main() {
 			os.Exit(1)
 		}
 		addUSer(alias)
-		restartServer()
 	case "remove":
 		var alias string
 		fmt.Println("Enter client name:")
@@ -47,7 +46,6 @@ func main() {
 			os.Exit(1)
 		}
 		removeUser(alias)
-		restartServer()
 	case "stat":
 		readWgDump()
 	}

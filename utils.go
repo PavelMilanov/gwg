@@ -105,7 +105,7 @@ func addUSer(alias string) {
 	users := readClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
-	restartServer()
+	commandServer("restart")
 }
 
 /*
@@ -126,7 +126,7 @@ func removeUser(alias string) {
 	users := readClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
-	restartServer()
+	commandServer("restart")
 }
 
 /*
@@ -138,6 +138,8 @@ func installServer(alias string) {
 	os.Mkdir(WG_MANAGER_DIR, 0660)
 	privKey, pubKey := generateKeys()
 	configureServer(privKey, pubKey, alias)
+	commandServer("enable")
+	commandServer("start")
 }
 
 /*

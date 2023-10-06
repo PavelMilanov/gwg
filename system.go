@@ -105,11 +105,11 @@ func showPeers() {
 }
 
 /*
-Перезапуск службы wg.
+Управление службой wg-quick.
 */
-func restartServer() {
+func commandServer(cmd string) {
 	server := readServerConfigFile()
-	command := fmt.Sprintf("sudo systemctl restart wg-quick@%s.service", server.Alias)
+	command := fmt.Sprintf("sudo systemctl %s wg-quick@%s.service", cmd, server.Alias)
 	out, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println(err)
