@@ -109,7 +109,7 @@ func showPeers() {
 */
 func restartServer() {
 	server := readServerConfigFile()
-	command := fmt.Sprintf("sudo systemctl status wg-quick@%s.service", server.Alias)
+	command := fmt.Sprintf("sudo systemctl restart wg-quick@%s.service", server.Alias)
 	out, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println(err)
