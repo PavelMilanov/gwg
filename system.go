@@ -26,6 +26,18 @@ func initSystem() {
 }
 
 /*
+Установка/настройках всех необходимых компонент для работы gwg-manager.
+*/
+func initProject() {
+	rounds := [4]string{"sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard"}
+	for _, round := range rounds {
+		out, err := exec.Command("bash", "-c", round).Output()
+		check(err)
+		fmt.Println(string(out))
+	}
+}
+
+/*
 Создает рабочие директории.
 */
 func createProjectDirs() {
@@ -33,7 +45,7 @@ func createProjectDirs() {
 	check(err)
 	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
 	for _, dir := range dirs {
-		err := os.MkdirAll(dir, 0764)
+		err := os.MkdirAll(dir, 0770)
 		check(err)
 	}
 	fmt.Println("Working diretories created")
