@@ -31,7 +31,7 @@ curl -o https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.ta
 tar -xvzf gwg.tar.gz
 ```
 
-- Запустить скрипт первичной настройки окружения gwg-manager и установки gwg 
+- Запустить скрипт первичной настройки окружения gwg-manager и установки gwg
    ( **В конце установки будет предложено перезапустить сессию пользоватeля!** ):
 
 ```bash
