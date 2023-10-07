@@ -29,12 +29,14 @@ func initSystem() {
 Установка/настройках всех необходимых компонент для работы gwg-manager.
 */
 func initProject() {
-	rounds := [4]string{"sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard"}
+	rounds := [5]string{"sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
+	fmt.Println("Configuring project...")
 	for _, round := range rounds {
 		out, err := exec.Command("bash", "-c", round).Output()
 		check(err)
 		fmt.Println(string(out))
 	}
+	fmt.Println(string(GREEN), "Done.")
 }
 
 /*
@@ -42,13 +44,14 @@ func initProject() {
 */
 func createProjectDirs() {
 	err := os.Chdir(SERVER_DIR)
+	fmt.Println("Creating project directories...")
 	check(err)
 	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
 	for _, dir := range dirs {
 		err := os.MkdirAll(dir, 0770)
 		check(err)
 	}
-	fmt.Println("Working diretories created")
+	fmt.Println(string(GREEN), "Done.")
 }
 
 /*
@@ -56,6 +59,7 @@ func createProjectDirs() {
 */
 func setTemplateFiles() {
 	tmpls := [2]string{"wg_template.conf", "client_template.conf"}
+	fmt.Println("Setting template files...")
 	dir := os.TempDir()
 	os.Chdir(dir)
 	for _, tmpl := range tmpls {
@@ -64,6 +68,7 @@ func setTemplateFiles() {
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	}
+	fmt.Println(string(GREEN), "Done.")
 	defer os.RemoveAll(dir)
 }
 
