@@ -28,25 +28,17 @@ func initSystem() {
 /*
 Установка/настройках всех необходимых компонент для работы gwg-manager.
 */
-// func initProject() {
-// 	rounds := [7]string{"sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
-// 	fmt.Println("Configuration project...")
-// 	for _, round := range rounds {
-// 		out, err := exec.Command("bash", "-c", round).Output()
-// 		check(err)
-// 		fmt.Println(string(out))
-// 	}
-// 	fmt.Println(string(GREEN), "Done.")
-// }
-
-// func configureSystem() {
-// 	// rounds := [7]string{"sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
-// 	fmt.Println("System preparation...")
-// 	out, err := exec.Command("bash", "-c", "sudo groupadd gwg-manager && sudo usermod -aG gwg-manager $USER && su - $USER").Output()
-// 	check(err)
-// 	fmt.Println(string(out))
-// 	fmt.Println(string(GREEN), "Done.")
-// }
+func initProject() {
+	rounds := [7]string{"sudo apt install wireguard -y", "sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard", "sh -c (su -u $USER)"}
+	fmt.Println("Configuration project...")
+	for _, round := range rounds {
+		cmd := exec.Command("bash", "-c", round)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+	}
+	fmt.Println(string(GREEN), "Done.")
+}
 
 /*
 Создает рабочие директории.

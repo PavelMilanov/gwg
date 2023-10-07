@@ -132,7 +132,7 @@ func removeUser(alias string) {
 */
 func installServer(alias string) {
 	// configureSystem()
-	// initProject()
+	initProject()
 	createProjectDirs()
 	setTemplateFiles()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
