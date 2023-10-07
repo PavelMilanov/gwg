@@ -29,12 +29,19 @@ func initSystem() {
 Установка/настройках всех необходимых компонент для работы gwg-manager.
 */
 func initProject() {
-	rounds := [6]string{"sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "su - $USER", "sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
+	rounds := [7]string{"sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
 	fmt.Println("Configuring project...")
+	cmd := exec.Command("bash", "-c", "sudo groupadd gwg-manager && sudo usermod -aG gwg-manager $USER")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+	cmd1 := exec.Command("bash", "-c", "su - $USER")
+	cmd1.Stdout = os.Stdout
+	cmd1.Stderr = os.Stderr
+	cmd1.Run()
 	for _, round := range rounds {
 		cmd := exec.Command("bash", "-c", round)
 		cmd.Stdout = os.Stdout
-		cmd.Stdin = os.Stdin
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	}
