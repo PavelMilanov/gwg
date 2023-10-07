@@ -70,7 +70,6 @@ func setServerParams() (string, string) {
 	serverIntf = defaultRoute[4]
 	interfaces, err := net.Interfaces()
 	check(err)
-
 	for _, interf := range interfaces {
 		// Список адресов для каждого сетевого интерфейса
 		addrs, err := interf.Addrs()
