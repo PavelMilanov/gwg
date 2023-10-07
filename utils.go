@@ -131,8 +131,6 @@ func removeUser(alias string) {
 Установка Wireguard сервера.
 */
 func installServer(alias string) {
-	// configureSystem()
-	initProject()
 	createProjectDirs()
 	setTemplateFiles()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
