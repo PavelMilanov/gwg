@@ -32,9 +32,11 @@ func initProject() {
 	rounds := [6]string{"sudo groupadd gwg-manager", "sudo usermod -aG gwg-manager $USER", "su - $USER", "sudo apt install wireguard -y", "sudo chown root:gwg-manager /etc/wireguard", "sudo chmod ug+rwx /etc/wireguard"}
 	fmt.Println("Configuring project...")
 	for _, round := range rounds {
-		out, err := exec.Command("bash", "-c", round).Output()
-		check(err)
-		fmt.Println(string(out))
+		cmd := exec.Command("bash", "-c", round)
+		cmd.Stdout = os.Stdout
+		cmd.Stdin = os.Stdin
+		cmd.Stderr = os.Stderr
+		cmd.Run()
 	}
 	fmt.Println(string(GREEN), "Done.")
 }
@@ -65,7 +67,6 @@ func setTemplateFiles() {
 	for _, tmpl := range tmpls {
 		command := fmt.Sprintf("curl -O https://github.com/PavelMilanov/go-wg-manager/blob/main/%s && mv %s %s/%s", tmpl, tmpl, WG_MANAGER_DIR, tmpl)
 		cmd := exec.Command("bash", "-c", command)
-		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	}
