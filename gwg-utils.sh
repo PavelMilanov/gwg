@@ -38,10 +38,10 @@ function installGwg {
 }
 
 function updateGwg {
-    curl -o https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.tar.gz
-    tar -xvzf gwg.tar.gz
+    curl -o https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.tar
+    tar -xvzf gwg.tar
     sudo mv gwg /usr/bin
-    rm gwg.tar.gz
+    rm gwg.tar
     mv wg_template.conf /etc/wireguard/.wg_manager/ && mv client_template.conf /etc/wireguard/.wg_manager/
 }
 
