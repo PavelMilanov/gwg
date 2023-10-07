@@ -19,5 +19,11 @@ echo "Enable ipv4 forwarding..."
 sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
 sudo sysctl -p
 
+echo "Enter user password and write 'exit'!!!!"
 sh -c "su - $USER"
+
+echo "Install gwg-manager..."
+sudo mv gwg /usr/bin
 echo "Done"
+
+gwg version

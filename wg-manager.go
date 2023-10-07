@@ -46,6 +46,8 @@ func main() {
 		removeUser(alias)
 	case "stat":
 		readWgDump()
+	case "version":
+		fmt.Println("gwg version: 0.2.0") // тестовый вывод, в разработке
 	default:
 		fmt.Print(MENU)
 	}
