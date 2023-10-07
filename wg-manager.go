@@ -20,7 +20,7 @@ func main() {
 		configureServer("private", "publick", "wg0") // for dev
 	case "install":
 		var alias string
-		fmt.Println(string(YELLOW), "Enter alias: 'wg0'")
+		fmt.Println("Enter alias: 'wg0'")
 		alias_value, _ := fmt.Scanf("%s\r", &alias)
 		if alias_value == 0 {
 			alias = "wg0"
@@ -30,7 +30,7 @@ func main() {
 		showPeers()
 	case "add":
 		var alias string
-		fmt.Println(string(YELLOW), "Enter client name:")
+		fmt.Println("Enter client name:")
 		alias_value, _ := fmt.Scanf("%s", &alias)
 		if alias_value == 0 {
 			os.Exit(1)
@@ -38,7 +38,7 @@ func main() {
 		addUSer(alias)
 	case "remove":
 		var alias string
-		fmt.Println(string(YELLOW), "Enter client name:")
+		fmt.Println("Enter client name:")
 		alias_value, _ := fmt.Scanf("%s", &alias)
 		if alias_value == 0 {
 			os.Exit(1)
@@ -47,7 +47,7 @@ func main() {
 	case "stat":
 		readWgDump()
 	case "version":
-		fmt.Println("gwg version: 0.2.0") // тестовый вывод, в разработке
+		fmt.Println("gwg version: 0.2.1") // тестовый вывод, в разработке
 	default:
 		fmt.Print(MENU)
 	}

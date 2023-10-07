@@ -132,7 +132,6 @@ func removeUser(alias string) {
 */
 func installServer(alias string) {
 	createProjectDirs()
-	setTemplateFiles()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0660)

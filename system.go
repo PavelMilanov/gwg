@@ -37,25 +37,7 @@ func createProjectDirs() {
 		err := os.MkdirAll(dir, 0770)
 		check(err)
 	}
-	fmt.Println(string(GREEN), "Done.")
-}
-
-/*
-Устанавливает файлы шаблонов в рабочую директориию.
-*/
-func setTemplateFiles() {
-	tmpls := [2]string{"wg_template.conf", "client_template.conf"}
-	fmt.Println("Setting template files...")
-	dir := os.TempDir()
-	os.Chdir(dir)
-	for _, tmpl := range tmpls {
-		command := fmt.Sprintf("curl -O https://github.com/PavelMilanov/go-wg-manager/blob/main/%s && mv %s %s/%s", tmpl, tmpl, WG_MANAGER_DIR, tmpl)
-		cmd := exec.Command("bash", "-c", command)
-		cmd.Stderr = os.Stderr
-		cmd.Run()
-	}
-	fmt.Println(string(GREEN), "Done.")
-	defer os.RemoveAll(dir)
+	fmt.Println("Done.")
 }
 
 /*
