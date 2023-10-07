@@ -14,27 +14,32 @@
 5) Просмотр подробной статистики на основе стандартной утилиты wg show dump. (дорабатывается)
 
 ## Поддерживаемые платформы
- - Любой дистрибутив linux на основе Debian.
+
+- Любой дистрибутив linux на основе Debian.
 
 ## Установка
 
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/go-wg-manager/tags) версией:
+
 ```bash
 curl -o https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.tar.gz
 ```
 
 - Распаковать архив:
+
 ```bash
 tar -xvzf gwg.tar.gz
 ```
 
 - Запустить скрипт первичной настройки окружения gwg-manager и установки gwg 
    ( **В конце установки будет предложено перезапустить сессию пользоватeля!** ):
+
 ```bash
 ./gwg-utils.sh install
 ```
 
 - После перезапуска сессии пользователя запустить установку сервера Wireguard.
+
 ```bash
 gwg install
 ```
