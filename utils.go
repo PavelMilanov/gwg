@@ -11,11 +11,6 @@ import (
 	"text/template"
 )
 
-const (
-	SERVER_TEMPLATE = WG_MANAGER_DIR + "/wg_template.conf"
-	CLIENT_TEMPLATE = WG_MANAGER_DIR + "/client_template.conf"
-)
-
 /*
 Обработчик ошибок.
 */
@@ -137,6 +132,7 @@ func removeUser(alias string) {
 */
 func installServer(alias string) {
 	createProjectDirs()
+	setTemplateFiles()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0660)

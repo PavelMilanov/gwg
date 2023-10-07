@@ -13,6 +13,8 @@ const (
 	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
 	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
 	USERS_DIR        = SERVER_DIR + "users"
+	SERVER_TEMPLATE  = WG_MANAGER_DIR + "/wg_template.conf"
+	CLIENT_TEMPLATE  = WG_MANAGER_DIR + "/client_template.conf"
 )
 
 /*
@@ -35,6 +37,22 @@ func createProjectDirs() {
 		check(err)
 	}
 	fmt.Println("Working diretories created")
+}
+
+/*
+Устанавливает файлы шаблонов в рабочую директориию.
+*/
+func setTemplateFiles() {
+	tmpls := [2]string{"wg_template.conf", "client_template.conf"}
+	dir := os.TempDir()
+	os.Chdir(dir)
+	for _, tmpl := range tmpls {
+		command := fmt.Sprintf("curl -O https://github.com/PavelMilanov/go-wg-manager/blob/main/%s && mv %s %s/%s", tmpl, tmpl, WG_MANAGER_DIR, tmpl)
+		cmd := exec.Command("bash", "-c", command)
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+	}
+	defer os.RemoveAll(dir)
 }
 
 /*
