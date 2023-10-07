@@ -22,13 +22,13 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/go-wg-manager/tags) версией:
 
 ```bash
-curl -O https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.tar
+wget https://github.com/PavelMilanov/go-wg-manager/releases/download/latest/gwg.tar
 ```
 
 - Распаковать архив:
 
 ```bash
-tar -xvf gwg.tar.gz
+tar -xvf gwg.tar
 ```
 
 - Запустить скрипт первичной настройки окружения gwg-manager и установки gwg
