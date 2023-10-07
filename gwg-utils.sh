@@ -38,7 +38,7 @@ function installGwg {
 }
 
 function updateGwg {
-    wget https://github.com/PavelMilanov/go-wg-manager/releases/tag/latest/gwg.tar
+    wget https://github.com/PavelMilanov/go-wg-manager/releases/download/latest/gwg.tar
     tar -xzf gwg.tar
     sudo mv gwg /usr/bin
     rm gwg.tar
