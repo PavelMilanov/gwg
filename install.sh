@@ -5,11 +5,15 @@ set -e
 echo "Installing Wireguard Server..."
 sudo apt install -y wireguard
 
-echo "Creating application tools..."
-mv gwg /usr/bin/
+
+sudo groupadd gwg-manager
+sudo usermod -aG gwg-manager $USER
+su - $USER"
+exit
+# echo "Creating application tools..."
+# mv gwg /usr/bin/
 sudo chown -R $USER /etc/wireguard/ && chmod -R 760 /etc/wireguard/
-# mkdir /etc/wireguard/.configs && chmod -R 764 /etc/wireguard/.configs/
-# mkdir /etc/wireguard/.wg_manager && chmod -R 764 /etc/wireguard/.wg_manager/
-# mkdir /etc/wireguard/users && chmod -R 764 /etc/wireguard/users/
+sudo chown root:gwg-manager /etc/wireguard
+sudo chmod ug+rwx /etc/wireguard
 echo "export PATH=$PATH:/usr/bin/gwg"
 echo "Done"
