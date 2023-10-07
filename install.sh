@@ -12,12 +12,12 @@ sudo chown root:gwg-manager /etc/wireguard
 sudo chmod ug+rwx /etc/wireguard
 
 echo "Set gwg PATH..."
-sh -c (echo "export PATH=$PATH:/usr/bin/gwg" >> /etc/profile)
+sudo sh -c "echo export PATH=$PATH:/usr/bin/gwg >> /etc/profile"
 source /etc/profile
 
 echo "Enable ipv4 forwarding..."
-sh -c (echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf)
+sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
 sudo sysctl -p
 
-sh -c (su - $USER)
+sh -c "su - $USER"
 echo "Done"
