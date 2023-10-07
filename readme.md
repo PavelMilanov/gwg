@@ -1,1 +1,6 @@
-# go-wg-manager
+# go-wg-manager - менеджер Wireguard Server
+
+---
+
+### Установка
+

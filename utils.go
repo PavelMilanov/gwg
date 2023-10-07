@@ -17,6 +17,16 @@ const (
 )
 
 /*
+Обработчик ошибок.
+*/
+func check(e error) {
+	if e != nil {
+		fmt.Println(e)
+		os.Exit(1)
+	}
+}
+
+/*
 Генерация конфигурационного файла (conf) сервера по шаблону.
 */
 func writeServerConfig(config WgServerConfig, filename string) {
@@ -58,9 +68,7 @@ func readServerConfigFile() WgServerConfig {
 	config := WgServerConfig{}
 	for _, file := range files {
 		content, err := os.ReadFile(WG_MANAGER_DIR + "/" + file.Name())
-		if err != nil {
-			panic(err)
-		}
+		check(err)
 		json.Unmarshal(content, &config)
 	}
 	return config
@@ -75,9 +83,7 @@ func readClientConfigFiles() []UserConfig {
 	var configs []UserConfig
 	for _, file := range files {
 		content, err := os.ReadFile(USERS_CONFIG_DIR + "/" + file.Name())
-		if err != nil {
-			panic(err)
-		}
+		check(err)
 		json.Unmarshal(content, &config)
 		configs = append(configs, config)
 	}
@@ -118,10 +124,7 @@ func removeUser(alias string) {
 	configs := []string{configfile, jsonfile}
 	for _, file := range configs {
 		err := os.Remove(file)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		check(err)
 	}
 	users := readClientConfigFiles()
 	server.Users = users
@@ -193,24 +196,15 @@ func readWgDump() {
 	// command := fmt.Sprintf("wc -l dump.log")
 	command := fmt.Sprintf("sudo wg show wg0 dump | wc -l")
 	out, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check(err)
 	count, err := strconv.Atoi(strings.Split(string(out), " ")[0]) // [8 dump.log]
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check(err)
 	pool := []WireguardDump{}
 	for i := 2; i < count+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		check(err)
 		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
 		user := data[0]                          // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
 		rateRx, err := strconv.Atoi(data[5])     // 816

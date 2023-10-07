@@ -20,23 +20,19 @@ const (
 */
 func initSystem() {
 	_, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check(err)
 }
 
 /*
 Создает рабочие директории.
 */
 func createProjectDirs() {
+	err := os.Chdir(SERVER_DIR)
+	check(err)
 	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
 	for _, dir := range dirs {
-		err := os.MkdirAll(SERVER_DIR+dir, 0764)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		err := os.MkdirAll(dir, 0764)
+		check(err)
 	}
 	fmt.Println("Working diretories created")
 }
@@ -66,25 +62,19 @@ func setClientIp() string {
 */
 func setServerParams() (string, string) {
 	out, err := exec.Command("bash", "-c", "ip r").Output()
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	var serverIp, serverIntf string
 	defaultRoute := strings.Split(string(out), " ")[:5] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404 ..."
 	ip := defaultRoute[2]
 	gate4 := net.ParseIP(ip)
 	serverIntf = defaultRoute[4]
 	interfaces, err := net.Interfaces()
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 
 	for _, interf := range interfaces {
 		// Список адресов для каждого сетевого интерфейса
 		addrs, err := interf.Addrs()
-		if err != nil {
-			panic(err)
-		}
+		check(err)
 		for _, addr := range addrs {
 			data := addr.String()
 			ip, ipnet, _ := net.ParseCIDR(data)
@@ -119,10 +109,7 @@ func generateKeys() (string, string) {
 */
 func showPeers() {
 	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check(err)
 	fmt.Println(string(out))
 }
 
@@ -133,9 +120,6 @@ func commandServer(cmd string) {
 	server := readServerConfigFile()
 	command := fmt.Sprintf("sudo systemctl %s wg-quick@%s.service", cmd, server.Alias)
 	out, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	check(err)
 	fmt.Println(string(out))
 }

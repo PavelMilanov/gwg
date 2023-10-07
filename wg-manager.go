@@ -10,11 +10,11 @@ func init() {
 }
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf(MENU)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		fmt.Printf(MENU)
+	// 	}
+	// }()
 	switch os.Args[1] {
 	case "config":
 		configureServer("private", "publick", "wg0") // for dev
