@@ -15,7 +15,7 @@ function installGwg {
     sudo chmod ug+rwx /etc/wireguard
 
     echo "Creating template files..."
-    mv wg_template.conf /etc/wireguard/.wg_manager/ && mv client_template.conf /etc/wireguard/.wg_manager/
+    sudo mv wg_template.conf /etc/wireguard/.wg_manager/ && mv client_template.conf /etc/wireguard/.wg_manager/
 
     echo "Set gwg PATH..."
     sudo sh -c "echo export PATH=$PATH:/usr/bin/gwg >> /etc/profile"
