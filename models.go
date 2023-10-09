@@ -41,6 +41,7 @@ type UserConfig struct {
 	ServerIp           string
 	ServerPort         int
 	Name               string
+	Status             string
 }
 
 /*

@@ -100,6 +100,7 @@ func addUSer(alias string) {
 		ServerIp:           server.PublicAddress,
 		ServerPort:         server.ListenPort,
 		Name:               alias,
+		Status:             "active",
 	}
 	config.addConfigUser(alias)
 	writeClientConfig(config, alias)
