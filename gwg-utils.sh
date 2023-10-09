@@ -12,7 +12,7 @@ command=$1
 
 function preinstallGwg {
     echo "Installing Wireguard Server..."
-    sudo apt install -y wireguard
+    sudo apt install -y wireguard iptables
 
     echo "Preparing system..."
     sudo groupadd gwg-manager
@@ -34,7 +34,7 @@ function preinstallGwg {
 
     gwg version
 
-    su - u $USER ./gwg-utils server_install
+    su - $USER ./gwg-utils.sh server_install
 }
 
 function postinstallGwg {
