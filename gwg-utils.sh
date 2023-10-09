@@ -3,10 +3,10 @@
 set -e
 
 
-SERVER_DIR       = "/etc/wireguard/"
-WG_MANAGER_DIR   = $SERVER_DIR + ".wg_manager"
-USERS_CONFIG_DIR = $SERVER_DIR + ".configs"
-USERS_DIR        = $SERVER_DIR + "users"
+SERVER_DIR="/etc/wireguard/"
+WG_MANAGER_DIR="${SERVER_DIR}.wg_manager"
+USERS_CONFIG_DIR="${SERVER_DIR}.configs"
+USERS_DIR="${SERVER_DIR}users"
 
 command=$1
 
