@@ -47,7 +47,7 @@ func main() {
 	case "stat":
 		readWgDump()
 	case "version":
-		fmt.Println("gwg version: 0.2.1") // тестовый вывод, в разработке
+		fmt.Println("gwg version: 0.2.2") // тестовый вывод, в разработке
 	default:
 		fmt.Print(MENU)
 	}
