@@ -63,7 +63,7 @@ func main() {
 		}
 		changeStatusUser(alias, "unblock")
 	case "version":
-		fmt.Println("gwg version: 0.2.2") // тестовый вывод, в разработке
+		fmt.Println("gwg version: 0.2.3") // тестовый вывод, в разработке
 	default:
 		fmt.Print(MENU)
 	}

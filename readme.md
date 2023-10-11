@@ -23,7 +23,7 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/go-wg-manager/tags) версией:
 
 ```bash
-wget https://github.com/PavelMilanov/go-wg-manager/releases/download/v0.2.2/gwg.tar
+wget https://github.com/PavelMilanov/go-wg-manager/releases/download/v0.2.3/gwg.tar
 ```
 
 - Распаковать архив:
