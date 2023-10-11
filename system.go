@@ -45,17 +45,17 @@ func createProjectDirs() {
 */
 func setClientIp() string {
 	configs := readClientConfigFiles()
-	label := "10.0.0.2/24"
+	label := "10.0.0.2/32"
 	var lastindex = 3 // так как первый ip 10.0.0.(2)
 	for index, config := range configs {
 		if label <= config.ClientLocalAddress {
-			label = fmt.Sprintf("10.0.0.%d/24", index+2)
+			label = fmt.Sprintf("10.0.0.%d/32", index+2)
 		}
 		lastindex += index
 	}
 	// если нет пропущенных адресов, выдаем следующий по списку
 	if len(configs) > 0 && label == configs[len(configs)-1].ClientLocalAddress {
-		label = fmt.Sprintf("10.0.0.%d/24", lastindex)
+		label = fmt.Sprintf("10.0.0.%d/32", lastindex)
 	}
 	return label
 }

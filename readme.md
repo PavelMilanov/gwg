@@ -22,7 +22,7 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/go-wg-manager/tags) версией:
 
 ```bash
-wget https://github.com/PavelMilanov/go-wg-manager/releases/download/latest/gwg.tar
+wget https://github.com/PavelMilanov/go-wg-manager/releases/download/v0.2.2/gwg.tar
 ```
 
 - Распаковать архив:
@@ -37,5 +37,3 @@ tar -xvf gwg.tar
 ```bash
 ./gwg-utils.sh install
 ```
-
-- После завершения установки вам будет предложено выйти из активной сессии пользователя.
