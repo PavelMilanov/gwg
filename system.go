@@ -13,9 +13,6 @@ const (
 	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
 	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
 	USERS_DIR        = SERVER_DIR + "users"
-	// SERVER_TEMPLATE  = WG_MANAGER_DIR + "/wg_template.conf"
-	// SERVER_TEMPLATE  = TEST_TEMPLATE
-	// CLIENT_TEMPLATE = WG_MANAGER_DIR + "/client_template.conf"
 )
 
 /*
