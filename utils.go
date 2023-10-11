@@ -43,14 +43,12 @@ func writeServerConfig(config WgServerConfig, filename string) {
 */
 func writeClientConfig(config UserConfig, filename string) {
 	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
-	// clientTemplate, err := template.ParseFiles(CLIENT_TEMPLATE)
 	templ, err := template.New("client").Parse(CLIENT_TEMPLATE)
 	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0660)
 	err = templ.Execute(file, config)
 	if err != nil {
 		fmt.Println(err)
 		os.Remove(clientFile)
-		// os.Exit(1)
 	}
 	fmt.Println("Done writing client config")
 	defer file.Close()
@@ -103,6 +101,31 @@ func addUSer(alias string) {
 		Name:               alias,
 		Status:             "active",
 	}
+	config.addConfigUser(alias)
+	writeClientConfig(config, alias)
+	users := readClientConfigFiles()
+	server.Users = users
+	writeServerConfig(server, server.Alias)
+	commandServer("restart")
+}
+
+/*
+Блокировка/разблокировка пользователя.
+*/
+func changeStatusUser(alias string, state string) {
+	server := readServerConfigFile()
+	jsonfile := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, alias)
+	config := UserConfig{}
+	content, err := os.ReadFile(jsonfile)
+	check(err)
+	json.Unmarshal(content, &config)
+	switch state {
+	case "block":
+		config.Status = ""
+	case "unblock":
+		config.Status = "active"
+	}
+	os.Remove(jsonfile)
 	config.addConfigUser(alias)
 	writeClientConfig(config, alias)
 	users := readClientConfigFiles()

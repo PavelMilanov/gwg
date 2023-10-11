@@ -46,6 +46,22 @@ func main() {
 		removeUser(alias)
 	case "stat":
 		readWgDump()
+	case "block":
+		var alias string
+		fmt.Println("Enter client name:")
+		alias_value, _ := fmt.Scanf("%s", &alias)
+		if alias_value == 0 {
+			os.Exit(1)
+		}
+		changeStatusUser(alias, "block")
+	case "unblock":
+		var alias string
+		fmt.Println("Enter client name:")
+		alias_value, _ := fmt.Scanf("%s", &alias)
+		if alias_value == 0 {
+			os.Exit(1)
+		}
+		changeStatusUser(alias, "unblock")
 	case "version":
 		fmt.Println("gwg version: 0.2.2") // тестовый вывод, в разработке
 	default:

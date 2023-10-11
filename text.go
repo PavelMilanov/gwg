@@ -7,11 +7,11 @@ ListenPort = {{ .ListenPort}}
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ .Eth}} -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ .Eth}} -j MASQUERADE
 {{ range .Users}}
-[Peer]
-# Name = {{ .Name}}
-PublicKey = {{ .ClientPublicKey}}
-AllowedIPs = {{ .ClientLocalAddress}}
-{{ end}}
+{{ if .Status}}[Peer]{{else}}# [Peer]{{end}}
+# Name = {{ .Name }}
+{{ if .Status}}PublicKey = {{ .ClientPublicKey}}{{else}}# PublicKey = {{ .ClientPublicKey}}{{end}}
+{{ if .Status}}AllowedIPs = {{ .ClientLocalAddress}}{{else}}# AllowedIPs = {{ .ClientLocalAddress}}{{end}}
+{{end}}
 `
 
 const CLIENT_TEMPLATE = `[Interface]
@@ -31,5 +31,7 @@ gwg instal	- установка wireguard-сервера.
 gwg show	- просмотр состояния wireguard-сервера.
 gwg add		- добавления пользователя.
 gwg remove	- удаление пользователя.
+gwg block	- блокировка пользователя.
+gwg unblock - разблокировка пользователя.
 gwg stat	- просмотр подробной статистики wireguard-сервера. 
 `
