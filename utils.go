@@ -155,13 +155,13 @@ func removeUser(alias string) {
 /*
 Установка Wireguard сервера.
 */
-func installServer(alias string) {
+func installServer(alias string, network string, port int) {
 	createProjectDirs()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0660)
 	privKey, pubKey := generateKeys()
-	configureServer(privKey, pubKey, alias)
+	configureServer(privKey, pubKey, alias, network, port)
 	commandServer("enable")
 	commandServer("start")
 }
@@ -169,34 +169,21 @@ func installServer(alias string) {
 /*
 Создание шаблона конфигурационного файла сервера.
 */
-func configureServer(priv string, pub string, alias string) {
+func configureServer(priv string, pub string, alias string, addr string, port int) {
 	var (
-		private_addr string
-		port         int
-		intf         string
-		public_addr  string
+		intf        string
+		public_addr string
 	)
 	public_addr, intf = setServerParams()
-	fmt.Println("Enter private network: 10.0.0.1/24")
-	private_addr_value, _ := fmt.Scanf("%s\r", &private_addr)
-	if private_addr_value == 0 {
-		private_addr = "10.0.0.1/24"
-	} else {
-		isValid, _ := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}`, private_addr)
-		if !isValid {
-			fmt.Println("Enter valid value. Example: 10.0.0.1/24")
-			os.Exit(1)
-		}
-	}
-	fmt.Println("Enter listen port: 51830")
-	port_value, _ := fmt.Scanf("%d\r", &port)
-	if port_value == 0 {
-		port = 51830
+	isValid, _ := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}`, addr)
+	if !isValid {
+		fmt.Println("Enter valid value. Example: 10.0.0.1/24")
+		os.Exit(1)
 	}
 	config := WgServerConfig{
 		ServerPrivateKey: priv,
 		ServerPublicKey:  pub,
-		LocalAddress:     private_addr,
+		LocalAddress:     addr,
 		PublicAddress:    public_addr,
 		ListenPort:       port,
 		Eth:              intf,
