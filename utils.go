@@ -26,13 +26,13 @@ func check(e error) {
 */
 func writeServerConfig(config WgServerConfig, filename string) {
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, filename)
-	templ, err := template.ParseFiles(SERVER_TEMPLATE)
+	templ, err := template.New("server").Parse(SERVER_TEMPLATE)
 	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
 	err = templ.Execute(file, config)
 	if err != nil {
 		fmt.Println(err)
 		os.Remove(serverFile)
-		os.Exit(1)
+		// os.Exit(1)
 	}
 	fmt.Println("Done writing server config")
 	defer file.Close()
@@ -43,13 +43,14 @@ func writeServerConfig(config WgServerConfig, filename string) {
 */
 func writeClientConfig(config UserConfig, filename string) {
 	clientFile := fmt.Sprintf("%s/%s.conf", USERS_DIR, filename)
-	clientTemplate, err := template.ParseFiles(CLIENT_TEMPLATE)
+	// clientTemplate, err := template.ParseFiles(CLIENT_TEMPLATE)
+	templ, err := template.New("client").Parse(CLIENT_TEMPLATE)
 	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0660)
-	err = clientTemplate.Execute(file, config)
+	err = templ.Execute(file, config)
 	if err != nil {
 		fmt.Println(err)
 		os.Remove(clientFile)
-		os.Exit(1)
+		// os.Exit(1)
 	}
 	fmt.Println("Done writing client config")
 	defer file.Close()

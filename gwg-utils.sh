@@ -43,9 +43,6 @@ function postinstallGwg {
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
 
-    echo "Creating template files..."
-    mv wg_template.conf $WG_MANAGER_DIR && mv client_template.conf $WG_MANAGER_DIR
-
     echo "Installing wg server..."
     gwg install
 
@@ -59,7 +56,6 @@ function updateGwg {
     tar -xzf gwg.tar
     sudo mv gwg /usr/bin
     rm gwg.tar
-    mv wg_template.conf $WG_MANAGER_DIR && mv client_template.conf $WG_MANAGER_DIR
 }
 
 case "$command" in
