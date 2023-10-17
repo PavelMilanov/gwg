@@ -55,7 +55,7 @@ tar -xvf gwg.tar
 gwg show
 ```
 
-![[docs/images/show.png]]
+(docs/images/show.png)
 
 - Просмотр подробной статистики:
 
@@ -63,7 +63,7 @@ gwg show
 gwg stat
 ```
 
-![[docs/images/stat.png]]
+(docs/images/stat.png)
 
 - Добавление пользователя:
 
@@ -71,11 +71,11 @@ gwg stat
 gwg add -name <alias>
 ```
 
-![[docs/images/add.png]]
+(docs/images/add.png)
 
 - Удаление пользователя:
 
-![[docs/images/remove.png]]
+(docs/images/remove.png)
 
 ```bash
 gwg remove -name <alias>
@@ -87,7 +87,7 @@ gwg remove -name <alias>
 gwg block -name <alias>
 ```
 
-![[docs/images/block.png]]
+(docs/images/block.png)
 
 - Разблокировка пользователя:
 
@@ -95,4 +95,4 @@ gwg block -name <alias>
 gwg unblock -name <alias>
 ```
 
-![[docs/images/unblock.png]]
+(docs/images/unblock.png)
