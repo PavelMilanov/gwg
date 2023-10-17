@@ -203,20 +203,21 @@ func readWgDump() {
 	// command := fmt.Sprintf("wc -l dump.log")
 	command := fmt.Sprintf("sudo wg show wg0 dump | wc -l")
 	out, err := exec.Command("bash", "-c", command).Output()
+	formatOut := strings.TrimRight(string(out), "\n") // убираем \n вконце
 	check(err)
-	count, err := strconv.Atoi(strings.Split(string(out), " ")[0]) // [8 dump.log]
+	count, err := strconv.Atoi(strings.Split(formatOut, " ")[0]) // [8 dump.log]
 	check(err)
 	pool := []WireguardDump{}
 	for i := 2; i < int(count)+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
-		formatOut := strings.TrimRight(string(out), "\n") // убираем \n вконце
+		// formatOut := strings.TrimRight(string(out), "\n") // убираем \n вконце
 		check(err)
-		data := strings.Split(formatOut, "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
-		user := data[0]                        // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
-		rateRx, err := strconv.Atoi(data[5])   // 816
-		rateTx, err := strconv.Atoi(data[6])   // 3776
+		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
+		user := data[0]                          // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
+		rateRx, err := strconv.Atoi(data[5])     // 816
+		rateTx, err := strconv.Atoi(data[6])     // 3776
 		pool = append(pool, WireguardDump{
 			user:   user,
 			rateRx: rateRx,
