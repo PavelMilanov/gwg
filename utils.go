@@ -212,7 +212,6 @@ func readWgDump() {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
-		// formatOut := strings.TrimRight(string(out), "\n") // убираем \n вконце
 		check(err)
 		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
 		user := data[0]                          // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
