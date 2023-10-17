@@ -204,10 +204,10 @@ func readWgDump() {
 	command := fmt.Sprintf("sudo wg show wg0 dump | wc -l")
 	out, err := exec.Command("bash", "-c", command).Output()
 	check(err)
-	count, err := strconv.Atoi(strings.Split(string(out), " ")[0]) // [8 dump.log]
+	count, err := strconv.ParseInt(strings.Split(string(out), " ")[0], 10, 64) // [8 dump.log]
 	check(err)
 	pool := []WireguardDump{}
-	for i := 2; i < count+1; i++ {
+	for i := 2; i < int(count)+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
