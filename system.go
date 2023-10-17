@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -43,19 +44,29 @@ func createProjectDirs() {
 */
 func setClientIp() string {
 	configs := readClientConfigFiles()
-	label := "10.0.0.2/32"
-	var lastindex = 3 // так как первый ip 10.0.0.(2)
+	var pattern = 2
+	var ipv4 string
+	if len(configs) == 0 {
+		ipv4 = "10.0.0.2/32"
+	}
 	for index, config := range configs {
-		if label <= config.ClientLocalAddress {
-			label = fmt.Sprintf("10.0.0.%d/32", index+2)
+		data := config.ClientLocalAddress[:len(config.ClientLocalAddress)-3] // 10.0.0.5 10.0.0.5/32
+		clientIPv4 := strings.Split(data, ".")
+		IPv4byte1, _ := strconv.ParseInt(clientIPv4[0], 10, 0)
+		IPv4byte2, _ := strconv.ParseInt(clientIPv4[1], 10, 0)
+		IPv4byte3, _ := strconv.ParseInt(clientIPv4[2], 10, 0)
+		IPv4byte4, _ := strconv.ParseInt(clientIPv4[3], 10, 0)
+		fmt.Println(pattern, IPv4byte4)
+		if pattern < int(IPv4byte4) {
+			ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern)
+			break
 		}
-		lastindex += index
+		if index+1 == len(configs) {
+			ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern+1)
+		}
+		pattern++
 	}
-	// если нет пропущенных адресов, выдаем следующий по списку
-	if len(configs) > 0 && label == configs[len(configs)-1].ClientLocalAddress {
-		label = fmt.Sprintf("10.0.0.%d/32", lastindex)
-	}
-	return label
+	return ipv4
 }
 
 /*
