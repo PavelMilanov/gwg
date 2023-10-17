@@ -50,43 +50,49 @@ tar -xvf gwg.tar
 ## Использование
 
 - Просмотр состояния подключений:
-![gwg show](./docs/images/show.png)
 
 ```bash
 gwg show
 ```
 
+![gwg show](./docs/images/show.png)
+
 - Просмотр подробной статистики:
-![gwg stat](./docs/images/stat.png)
 
 ```bash
 gwg stat
 ```
 
+![gwg stat](./docs/images/stat.png)
+
 - Добавление пользователя:
-![gwg add](./docs/images/add.png)
 
 ```bash
 gwg add -name <alias>
 ```
 
+![gwg add](./docs/images/add.png)
+
 - Удаление пользователя:
-![gwg remove](./docs/images/remove.png)
 
 ```bash
 gwg remove -name <alias>
 ```
 
+![gwg remove](./docs/images/remove.png)
+
 - Блокировка пользователя:
-![gwg block](docs/images/block.png)
 
 ```bash
 gwg block -name <alias>
 ```
 
+![gwg block](docs/images/block.png)
+
 - Разблокировка пользователя:
-![gwg unblock](./docs/images/unblock.png)
 
 ```bash
 gwg unblock -name <alias>
 ```
+
+![gwg unblock](./docs/images/unblock.png)
