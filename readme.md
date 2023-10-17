@@ -46,3 +46,53 @@ tar -xvf gwg.tar
 ```bash
 ./gwg-utils.sh update v0.2.4
 ```
+
+## Использование
+
+- Просмотр состояния подключений:
+
+```bash
+gwg show
+```
+
+![[docs/images/show.png]]
+
+- Просмотр подробной статистики:
+
+```bash
+gwg stat
+```
+
+![[docs/images/stat.png]]
+
+- Добавление пользователя:
+
+```bash
+gwg add -name <alias>
+```
+
+![[docs/images/add.png]]
+
+- Удаление пользователя:
+
+![[docs/images/remove.png]]
+
+```bash
+gwg remove -name <alias>
+```
+
+- Блокировка пользователя:
+
+```bash
+gwg block -name <alias>
+```
+
+![[docs/images/block.png]]
+
+- Разблокировка пользователя:
+
+```bash
+gwg unblock -name <alias>
+```
+
+![[docs/images/unblock.png]]
