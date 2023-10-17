@@ -9,6 +9,7 @@ USERS_CONFIG_DIR="${SERVER_DIR}.configs"
 USERS_DIR="${SERVER_DIR}users"
 
 command=$1
+version=$2
 
 function preinstallGwg {
     echo "Installing Wireguard Server..."
@@ -52,7 +53,7 @@ function postinstallGwg {
 }
 
 function updateGwg {
-    wget https://github.com/PavelMilanov/go-wg-manager/releases/download/latest/gwg.tar
+    wget https://github.com/PavelMilanov/go-wg-manager/releases/download/${version}/gwg.tar
     tar -xzf gwg.tar
     sudo mv gwg /usr/bin
     rm gwg.tar
