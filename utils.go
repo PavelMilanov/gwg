@@ -241,5 +241,5 @@ func configureSystem() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	os.Remove(installFile)
+	// os.Remove(installFile)
 }
