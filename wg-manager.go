@@ -6,10 +6,6 @@ import (
 	"os"
 )
 
-func init() {
-	initSystem()
-}
-
 func main() {
 	// defer func() {
 	// 	if r := recover(); r != nil {
@@ -19,15 +15,18 @@ func main() {
 	switch os.Args[1] {
 	case "config":
 		configureServer("private", "publick", "wg0", "10.0.0.1/24", 51830) // for dev
+	case "stat":
+		readWgDump()
+	case "show":
+		showPeers()
 	case "install":
+		initSystem()
 		installCommand := flag.NewFlagSet("install", flag.ExitOnError)
 		alias := installCommand.String("name", "wg0", "название сервера")
 		network := installCommand.String("network", "10.0.0.1/24", "приватный адрес сервера")
 		port := installCommand.Int("port", 51830, "порт сервера")
 		installCommand.Parse(os.Args[2:])
 		installServer(*alias, *network, *port)
-	case "show":
-		showPeers()
 	case "add":
 		addCommand := flag.NewFlagSet("add", flag.ExitOnError)
 		alias := addCommand.String("name", "", "имя пользователя")
@@ -38,8 +37,6 @@ func main() {
 		alias := removeCommand.String("name", "", "имя пользователя")
 		removeCommand.Parse(os.Args[2:])
 		removeUser(*alias)
-	case "stat":
-		readWgDump()
 	case "block":
 		blockCommand := flag.NewFlagSet("block", flag.ExitOnError)
 		alias := blockCommand.String("name", "", "имя пользователя")

@@ -25,21 +25,6 @@ func initSystem() {
 }
 
 /*
-Создает рабочие директории.
-*/
-func createProjectDirs() {
-	err := os.Chdir(SERVER_DIR)
-	fmt.Println("Creating project directories...")
-	check(err)
-	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
-	for _, dir := range dirs {
-		err := os.MkdirAll(dir, 0770)
-		check(err)
-	}
-	fmt.Println("Done.")
-}
-
-/*
 Динамическое назначение приватных ip-адресов клиентам.
 */
 func setClientIp() string {
