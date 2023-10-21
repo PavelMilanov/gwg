@@ -62,11 +62,10 @@ function preinstallGwg {
     echo "Enable ipv4 forwarding..."
     sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
     sudo sysctl -p
-
-	su - $USER ./setup.sh postinstall
 }
 
 function postinstallGwg {
+	su - $USER
     echo "Creating gwg directory..."
     mkdir $WG_MANAGER_DIR
     mkdir $USERS_CONFIG_DIR

@@ -241,5 +241,18 @@ func configureSystem() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	// os.Remove(installFile)
+	preinstallServer()
+
+}
+
+func preinstallServer() {
+	installFile := "./setup.sh"
+	// err := os.WriteFile(installFile, []byte(GWG_UTILS), 0751)
+	// check(err)
+	command := fmt.Sprintf("%s postinstall", installFile)
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }
