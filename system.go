@@ -21,22 +21,10 @@ const (
 */
 func initSystem() {
 	_, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
-	check(err)
-}
-
-/*
-Создает рабочие директории.
-*/
-func createProjectDirs() {
-	err := os.Chdir(SERVER_DIR)
-	fmt.Println("Creating project directories...")
-	check(err)
-	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
-	for _, dir := range dirs {
-		err := os.MkdirAll(dir, 0770)
-		check(err)
+	if err != nil {
+		fmt.Println("Operating system does not support")
+		os.Exit(1)
 	}
-	fmt.Println("Done.")
 }
 
 /*

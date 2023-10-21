@@ -156,7 +156,6 @@ func removeUser(alias string) {
 Установка Wireguard сервера.
 */
 func installServer(alias string, network string, port int) {
-	createProjectDirs()
 	serverFile := fmt.Sprintf("%s/%s.conf", SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(WG_MANAGER_DIR, 0660)
@@ -226,4 +225,18 @@ func readWgDump() {
 		text := fmt.Sprintf("%d) User: %s, RateRx: %d, RateTx: %d", idx+1, line.user, line.rateRx, line.rateTx)
 		fmt.Println(text)
 	}
+}
+
+/*
+Настраивает систему перед установкой gwg.
+*/
+func configureSystem() {
+	initSystem()
+	installFile := fmt.Sprintf("%s/%s.sh", WG_MANAGER_DIR, "gwg-utils")
+	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0551)
+	check(err)
+	command := fmt.Sprintf("%s install", installFile)
+	out, err := exec.Command("bash", "-c", command).Output()
+	check(err)
+	fmt.Println(string(out))
 }
