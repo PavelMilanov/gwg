@@ -50,9 +50,7 @@ function preinstallGwg {
     sudo apt install -y wireguard iptables
 
     echo "Preparing system..."
-    sudo groupadd gwg-manager
-    sudo usermod -aG gwg-manager $USER
-    sudo chown root:gwg-manager /etc/wireguard
+    sudo chown root:$USER /etc/wireguard
     sudo chmod ug+rwx /etc/wireguard
 
     echo "Set gwg PATH..."
@@ -62,6 +60,13 @@ function preinstallGwg {
     echo "Enable ipv4 forwarding..."
     sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
     sudo sysctl -p
+	echo "Creating gwg directory..."
+    mkdir $WG_MANAGER_DIR
+    mkdir $USERS_CONFIG_DIR
+    mkdir $USERS_DIR
+	gwg version
+    echo "Installing wg server..."
+    gwg wireguard
 }
 
 function postinstallGwg {
