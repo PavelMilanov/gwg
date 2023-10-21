@@ -15,13 +15,14 @@ func main() {
 	switch os.Args[1] {
 	case "config":
 		configureServer("private", "publick", "wg0", "10.0.0.1/24", 51830) // for dev
-	case "install":
+	case "init":
 		configureSystem()
 	case "show":
 		showPeers()
 	case "stat":
 		readWgDump()
-	case "wireguard":
+	case "install":
+		configureSystem()
 		installCommand := flag.NewFlagSet("install", flag.ExitOnError)
 		alias := installCommand.String("name", "wg0", "название сервера")
 		network := installCommand.String("network", "10.0.0.1/24", "приватный адрес сервера")

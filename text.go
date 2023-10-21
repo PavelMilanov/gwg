@@ -66,22 +66,7 @@ function preinstallGwg {
     mkdir $USERS_DIR
 	gwg version
     echo "Installing wg server..."
-    gwg wireguard
-}
-
-function postinstallGwg {
-	su - $USER
-    echo "Creating gwg directory..."
-    mkdir $WG_MANAGER_DIR
-    mkdir $USERS_CONFIG_DIR
-    mkdir $USERS_DIR
-	gwg version
-    echo "Installing wg server..."
-    gwg wireguard
-
-    read -p 'You must log out to complete the installation. Ready [Y] ?' user
-    echo
-    sudo pkill -9 -u $USER
+    gwg install
 }
 
 function updateGwg {
@@ -94,8 +79,6 @@ function updateGwg {
 case "$command" in
     install)
         preinstallGwg;;
-    postinstall)
-        postinstallGwg;;
 	update)
         updateGwg;;
 esac
