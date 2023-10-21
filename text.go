@@ -62,12 +62,6 @@ function preinstallGwg {
     echo "Enable ipv4 forwarding..."
     sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
     sudo sysctl -p
-
-    echo "Set gwg..."
-    sudo mv gwg /usr/bin
-    echo "Done"
-
-    gwg version
 	if [ $? -eq 0 ]
 	then
 		su - $USER ./gwg-utils.sh postinstall
@@ -82,7 +76,7 @@ function postinstallGwg {
     mkdir $WG_MANAGER_DIR
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
-
+	gwg version
     echo "Installing wg server..."
     gwg wireguard
 
