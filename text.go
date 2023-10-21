@@ -62,13 +62,8 @@ function preinstallGwg {
     echo "Enable ipv4 forwarding..."
     sudo sh -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf"
     sudo sysctl -p
-	if [ $? -eq 0 ]
-	then
-		su - $USER ./setup.sh postinstall
-	else
-		echo "Error" >&2
-		exit 1
-	fi
+
+	su - $USER ./setup.sh postinstall
 }
 
 function postinstallGwg {

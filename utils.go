@@ -233,13 +233,13 @@ func readWgDump() {
 func configureSystem() {
 	initSystem()
 	installFile := "./setup.sh"
-	// dir := os.TempDir()
-	// os.Chdir(dir)
 	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0751)
 	check(err)
 	command := fmt.Sprintf("%s install", installFile)
-	out, err := exec.Command("bash", "-c", command).Output()
-	check(err)
-	fmt.Println(string(out))
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 	defer os.Remove(installFile)
 }
