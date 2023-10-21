@@ -64,9 +64,9 @@ function preinstallGwg {
     mkdir $WG_MANAGER_DIR
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
-	gwg version
     echo "Installing wg server..."
     gwg install
+	gwg version
 }
 
 function updateGwg {
