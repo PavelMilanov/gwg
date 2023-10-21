@@ -15,10 +15,12 @@ func main() {
 	switch os.Args[1] {
 	case "config":
 		configureServer("private", "publick", "wg0", "10.0.0.1/24", 51830) // for dev
-	case "stat":
-		readWgDump()
+	case "init":
+		configureSystem()
 	case "show":
 		showPeers()
+	case "stat":
+		readWgDump()
 	case "install":
 		initSystem()
 		installCommand := flag.NewFlagSet("install", flag.ExitOnError)
@@ -48,7 +50,9 @@ func main() {
 		unblockCommand.Parse(os.Args[2:])
 		changeStatusUser(*alias, "unblock")
 	case "version":
-		fmt.Println("gwg version: 0.2.4") // тестовый вывод, в разработке
+		fmt.Println("gwg version: 0.2.4")
+	// case "test":
+	// 	configureSystem()
 	default:
 		fmt.Print(MENU)
 	}

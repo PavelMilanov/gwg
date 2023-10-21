@@ -226,3 +226,20 @@ func readWgDump() {
 		fmt.Println(text)
 	}
 }
+
+/*
+Настраивает систему перед установкой gwg.
+*/
+func configureSystem() {
+	initSystem()
+	installFile := "./setup.sh"
+	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0751)
+	check(err)
+	command := fmt.Sprintf("%s install", installFile)
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+	defer os.Remove(installFile)
+}

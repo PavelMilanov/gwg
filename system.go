@@ -21,7 +21,10 @@ const (
 */
 func initSystem() {
 	_, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
-	check(err)
+	if err != nil {
+		fmt.Println("Operating system does not support")
+		os.Exit(1)
+	}
 }
 
 /*
