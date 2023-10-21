@@ -64,7 +64,7 @@ function preinstallGwg {
     sudo sysctl -p
 	if [ $? -eq 0 ]
 	then
-		su - $USER ./gwg-utils.sh postinstall
+		su - $USER ./setup.sh postinstall
 	else
 		echo "Error" >&2
 		exit 1
