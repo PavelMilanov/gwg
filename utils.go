@@ -232,11 +232,14 @@ func readWgDump() {
 */
 func configureSystem() {
 	initSystem()
-	installFile := fmt.Sprintf("%s/%s.sh", WG_MANAGER_DIR, "gwg-utils")
+	installFile := "gwg-utils.sh"
+	dir := os.TempDir()
+	os.Chdir(dir)
 	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0551)
 	check(err)
 	command := fmt.Sprintf("%s install", installFile)
 	out, err := exec.Command("bash", "-c", command).Output()
 	check(err)
 	fmt.Println(string(out))
+	defer os.RemoveAll(dir)
 }
