@@ -208,22 +208,31 @@ func readWgDump() {
 	count, err := strconv.Atoi(strings.Split(formatOut, " ")[0]) // [8 dump.log]
 	check(err)
 	pool := []WireguardDump{}
+	configs := readClientConfigFiles()
 	for i := 2; i < int(count)+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
 		check(err)
 		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
-		user := data[0]                          // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU
-		rateRx, err := strconv.Atoi(data[5])     // 816
-		rateTx, err := strconv.Atoi(data[6])     // 3776
+		var user string
+		for _, config := range configs {
+			if config.ClientPublicKey == data[0] { // сравниваем публичные ключи, чтобы узнать имя
+				user = config.Name
+				break
+			}
+		}
+		ip := data[3]
+		rateRx, err := strconv.Atoi(data[5]) // 816
+		rateTx, err := strconv.Atoi(data[6]) // 3776
 		pool = append(pool, WireguardDump{
 			user:   user,
+			ip:     ip,
 			rateRx: rateRx,
 			rateTx: rateTx})
 	}
 	for idx, line := range pool {
-		text := fmt.Sprintf("%d) User: %s, RateRx: %d, RateTx: %d", idx+1, line.user, line.rateRx, line.rateTx)
+		text := fmt.Sprintf("%d) User: %s, Ip: %s , RateRx: %d, RateTx: %d", idx+1, line.user, line.ip, line.rateRx, line.rateTx)
 		fmt.Println(text)
 	}
 }
