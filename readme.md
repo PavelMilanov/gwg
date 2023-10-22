@@ -23,7 +23,7 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/go-wg-manager/releases) версией и поддерживаемой архитектурой:
 
 ```bash
-wget https://github.com/PavelMilanov/go-wg-manager/releases/download/v0.2.5/gwg-linux-amd64.tar
+wget https://github.com/PavelMilanov/go-wg-manager/releases/download/v0.2.5/gwg.linux-amd64.tar
 ```
 
 - Распаковать архив:
@@ -49,6 +49,14 @@ sudo cp gwg /usr/bin/
 - В разработке
 
 ## Использование
+
+- Просмотр общего функионала:
+
+```bash
+gwg help
+```
+
+![gwg help](./docs/images/menu.png)
 
 - Просмотр состояния подключений:
 
