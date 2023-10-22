@@ -59,6 +59,7 @@ func (config *UserConfig) addConfigUser(fileName string) {
 */
 type WireguardDump struct {
 	user   string
+	ip     string
 	rateRx int
 	rateTx int
 }
