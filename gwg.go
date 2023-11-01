@@ -13,8 +13,8 @@ func main() {
 	// 	}
 	// }()
 	switch os.Args[1] {
-	case "config":
-		configureServer("private", "publick", "wg0", "10.0.0.1/24", 51830) // for dev
+	// case "config":
+	// 	configureServer("private", "publick", "wg0", "10.0.0.1/24", 51830) // for dev
 	case "init":
 		configureSystem()
 	case "show":
@@ -51,8 +51,6 @@ func main() {
 		changeStatusUser(*alias, "unblock")
 	case "version":
 		fmt.Println("gwg version: 0.2.5")
-	// case "test":
-	// 	configureSystem()
 	default:
 		fmt.Print(MENU)
 	}

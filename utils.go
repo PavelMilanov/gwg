@@ -12,16 +12,6 @@ import (
 )
 
 /*
-Обработчик ошибок.
-*/
-func check(e error) {
-	if e != nil {
-		fmt.Println(e)
-		os.Exit(1)
-	}
-}
-
-/*
 Генерация конфигурационного файла (conf) сервера по шаблону.
 */
 func writeServerConfig(config WgServerConfig, filename string) {
@@ -30,11 +20,10 @@ func writeServerConfig(config WgServerConfig, filename string) {
 	file, err := os.OpenFile(serverFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
 	err = templ.Execute(file, config)
 	if err != nil {
+		fmt.Println("Error writing server config")
 		fmt.Println(err)
 		os.Remove(serverFile)
-		// os.Exit(1)
 	}
-	fmt.Println("Done writing server config")
 	defer file.Close()
 }
 
@@ -47,10 +36,10 @@ func writeClientConfig(config UserConfig, filename string) {
 	file, err := os.OpenFile(clientFile, os.O_CREATE|os.O_WRONLY, 0660)
 	err = templ.Execute(file, config)
 	if err != nil {
+		fmt.Println("Error writing client config")
 		fmt.Println(err)
 		os.Remove(clientFile)
 	}
-	fmt.Println("Done writing client config")
 	defer file.Close()
 }
 
@@ -62,7 +51,9 @@ func readServerConfigFile() WgServerConfig {
 	config := WgServerConfig{}
 	for _, file := range files {
 		content, err := os.ReadFile(WG_MANAGER_DIR + "/" + file.Name())
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 		json.Unmarshal(content, &config)
 	}
 	return config
@@ -77,7 +68,9 @@ func readClientConfigFiles() []UserConfig {
 	var configs []UserConfig
 	for _, file := range files {
 		content, err := os.ReadFile(USERS_CONFIG_DIR + "/" + file.Name())
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 		json.Unmarshal(content, &config)
 		configs = append(configs, config)
 	}
@@ -107,6 +100,7 @@ func addUSer(alias string) {
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
+	fmt.Println("User added")
 }
 
 /*
@@ -117,7 +111,9 @@ func changeStatusUser(alias string, state string) {
 	jsonfile := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, alias)
 	config := UserConfig{}
 	content, err := os.ReadFile(jsonfile)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	json.Unmarshal(content, &config)
 	switch state {
 	case "block":
@@ -132,6 +128,8 @@ func changeStatusUser(alias string, state string) {
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
+	text := fmt.Sprintf("User state changed to %s", state)
+	fmt.Println(text)
 }
 
 /*
@@ -144,12 +142,15 @@ func removeUser(alias string) {
 	configs := []string{configfile, jsonfile}
 	for _, file := range configs {
 		err := os.Remove(file)
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	users := readClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
+	fmt.Println("User deleted")
 }
 
 /*
@@ -163,6 +164,7 @@ func installServer(alias string, network string, port int) {
 	configureServer(privKey, pubKey, alias, network, port)
 	commandServer("enable")
 	commandServer("start")
+	fmt.Println("Server started")
 }
 
 /*
@@ -202,17 +204,23 @@ func readWgDump() {
 	// command := fmt.Sprintf("wc -l dump.log")
 	command := fmt.Sprintf("sudo wg show wg0 dump | wc -l")
 	out, err := exec.Command("bash", "-c", command).Output()
-	formatOut := strings.TrimRight(string(out), "\n") // убираем \n вконце
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
+	formatOut := strings.TrimRight(string(out), "\n")            // убираем \n вконце
 	count, err := strconv.Atoi(strings.Split(formatOut, " ")[0]) // [8 dump.log]
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	pool := []WireguardDump{}
 	configs := readClientConfigFiles()
 	for i := 2; i < int(count)+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
 		out, err := exec.Command("bash", "-c", command).Output()
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 		data := strings.Split(string(out), "\t") // Os9rBvPsb824pzh95oSyoXnGPD6jK2YKr7NK4OBoRXU=    (none)  176.59.57.104:61476     10.0.0.5/32     1695899229      816     3776    off
 		var user string
 		for _, config := range configs {
@@ -243,7 +251,9 @@ func configureSystem() {
 	initSystem()
 	installFile := "./setup.sh"
 	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0751)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	command := fmt.Sprintf("%s install", installFile)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Stdout = os.Stdout

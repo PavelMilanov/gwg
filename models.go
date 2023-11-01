@@ -27,7 +27,9 @@ func (config *WgServerConfig) createServerConfigFile() {
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
 	err := os.WriteFile(filename, file, 0660)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 /*
@@ -51,7 +53,9 @@ func (config *UserConfig) addConfigUser(fileName string) {
 	file, _ := json.MarshalIndent(config, "", " ")
 	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
 	err := os.WriteFile(filename, file, 0660)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 /*
