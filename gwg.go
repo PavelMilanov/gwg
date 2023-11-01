@@ -46,7 +46,7 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			changeStatusUser(*alias, "unblock")
 		case "version":
-			fmt.Println("gwg version: 0.2.5")
+			fmt.Println("gwg version: 0.2.5.1")
 		default:
 			fmt.Print(MENU)
 		}
