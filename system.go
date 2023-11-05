@@ -44,7 +44,6 @@ func setClientIp() string {
 		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
 		IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
 		IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
-		fmt.Println(pattern, IPv4byte4)
 		if pattern < IPv4byte4 {
 			ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern)
 			break
