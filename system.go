@@ -96,7 +96,6 @@ func setServerParams() (string, string) {
 func generateKeys() (string, string) {
 	dir := os.TempDir()
 	os.Chdir(dir)
-	fmt.Println("Generate keys...")
 	cmd := exec.Command("bash", "-c", "wg genkey | tee privatekey | wg pubkey | tee publickey")
 	cmd.Stderr = os.Stderr
 	cmd.Run()
@@ -125,9 +124,8 @@ func showPeers() {
 func commandServer(cmd string) {
 	server := readServerConfigFile()
 	command := fmt.Sprintf("sudo systemctl %s wg-quick@%s.service", cmd, server.Alias)
-	out, err := exec.Command("bash", "-c", command).Output()
+	_, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(out))
 }
