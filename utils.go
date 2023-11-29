@@ -239,7 +239,7 @@ func readWgDump() {
 			rateTx: rateTx})
 	}
 	for idx, line := range pool {
-		text := fmt.Sprintf("%d) User: %s, Ip: %s , RateRx: %d, RateTx: %d", idx+1, line.user, line.ip, line.rateRx, line.rateTx)
+		text := fmt.Sprintf("%d) User: %s, Ip: %s , Resieve: %d, Sent: %d", idx+1, line.user, line.ip, line.rateRx, line.rateTx)
 		fmt.Println(text)
 	}
 }
