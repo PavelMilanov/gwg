@@ -1,6 +1,7 @@
 package tc
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -45,22 +46,52 @@ func createTCConfig(config TcConfig) {
 	defer file.Close()
 }
 
+/*
+Генерирует список моделей TcClass и преобразует их в json-файл.
+*/
 func AddBandwidth(description string, minSpeed string, ceilSpeed string) {
-	re := regexp.MustCompile(`[0-9]{1,3}`)
-	idx := re.FindString(minSpeed)
-	fmt.Printf(idx)
-	// config := TcClass{
-	// 	Class:       strconv.Atoi(idx),
-	// 	Description: description,
-	// 	MinSpeed:    minSpeed,
-	// 	CeilSpeed:   ceilSpeed,
-	// }
+	configs := readClassFile()
+	re := regexp.MustCompile(`[0-9]{1,3}`) //
+	idx := re.FindString(minSpeed)         // 20Mbit => 20
+	config := TcClass{
+		Class:       idx,
+		Description: description,
+		MinSpeed:    minSpeed,
+		CeilSpeed:   ceilSpeed,
+	}
+	configs = append(configs, config)
+	file, _ := json.MarshalIndent(configs, "", " ")
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, "classes")
+	err := os.WriteFile(filename, file, 0660)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func RemoveBandwidth() {
 
 }
 
+/*
+Выводит форматированный вывод json-файла tc/classses
+*/
 func ShowBandwidth() {
+	configs := readClassFile()
+	for _, config := range configs {
+		fmt.Printf("class: %s, description: %s, min-rate: %s, cail-rate: %s", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
+	}
+}
 
+/*
+Читает файл с tc class и преобразовывает в список моделей TcClass.
+*/
+func readClassFile() []TcClass {
+	config := []TcClass{}
+	content, err := os.ReadFile("tc/test.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	json.Unmarshal(content, &config)
+	fmt.Println(config)
+	return config
 }

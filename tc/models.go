@@ -15,7 +15,7 @@ type TcConfig struct {
 }
 
 type TcClass struct {
-	Class       int
+	Class       string
 	Description string
 	CeilSpeed   string
 	MinSpeed    string

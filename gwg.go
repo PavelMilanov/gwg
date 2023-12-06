@@ -48,10 +48,9 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			changeStatusUser(*alias, "unblock")
 		case "version":
-			fmt.Println("gwg version: 0.2.5.1")
+			fmt.Println("gwg version: 0.2.6")
 		case "tc":
 			if len(os.Args) > 2 {
-				fmt.Println(os.Args[1:])
 				switch os.Args[2] {
 				case "service":
 					if len(os.Args) > 3 {
