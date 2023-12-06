@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/PavelMilanov/go-wg-manager/paths"
 )
 
 /*
@@ -25,7 +27,7 @@ type WgServerConfig struct {
 */
 func (config *WgServerConfig) createServerConfigFile() {
 	file, _ := json.MarshalIndent(config, "", " ")
-	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
+	filename := fmt.Sprintf("%s/%s.json", paths.WG_MANAGER_DIR, config.Alias)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
 		fmt.Println(err)
@@ -51,7 +53,7 @@ type UserConfig struct {
 */
 func (config *UserConfig) addConfigUser(fileName string) {
 	file, _ := json.MarshalIndent(config, "", " ")
-	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
+	filename := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, fileName)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
 		fmt.Println(err)

@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/PavelMilanov/go-wg-manager/tc"
 )
 
 func main() {
@@ -47,6 +49,24 @@ func main() {
 			changeStatusUser(*alias, "unblock")
 		case "version":
 			fmt.Println("gwg version: 0.2.5.1")
+		case "tc":
+			if len(os.Args) > 2 {
+				fmt.Println(os.Args[1:])
+				switch os.Args[2] {
+				case "show":
+					tc.ShowService()
+				case "up":
+					// _, intf := setServerParams()
+					tc.UpService("vlan601", "2mbit", "2mbit")
+					// tc.UpService(intf)
+				case "down":
+					tc.DownService()
+				default:
+					fmt.Print(tc.TC_DEFAULT_MENU)
+				}
+			} else {
+				fmt.Print(tc.TC_DEFAULT_MENU)
+			}
 		default:
 			fmt.Print(MENU)
 		}
