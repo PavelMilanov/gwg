@@ -53,14 +53,39 @@ func main() {
 			if len(os.Args) > 2 {
 				fmt.Println(os.Args[1:])
 				switch os.Args[2] {
-				case "show":
-					tc.ShowService()
-				case "up":
-					// _, intf := setServerParams()
-					tc.UpService("vlan601", "2mbit", "2mbit")
-					// tc.UpService(intf)
-				case "down":
-					tc.DownService()
+				case "service":
+					if len(os.Args) > 3 {
+						switch os.Args[3] {
+						case "up":
+							// _, intf := setServerParams()
+							tc.UpService("vlan601", "2mbit", "2mbit")
+							// tc.UpService(intf)
+						case "down":
+							tc.DownService()
+						}
+					} else {
+						fmt.Print(tc.TC_DEFAULT_MENU)
+					}
+				case "bw":
+					if len(os.Args) > 3 {
+						switch os.Args[3] {
+						case "add":
+							bw := flag.NewFlagSet("add", flag.ExitOnError)
+							description := bw.String("d", "", "описание")
+							min := bw.String("m", "50Mbit", "минимальная скорость")
+							ceil := bw.String("c", "950Mbit", "допустимая скорость")
+							bw.Parse(os.Args[4:])
+							tc.AddBandwidth(*description, *min, *ceil)
+						case "remove":
+							tc.RemoveBandwidth()
+						case "show":
+							tc.ShowBandwidth()
+						}
+					} else {
+						fmt.Print(tc.TC_DEFAULT_MENU)
+					}
+				// case "show":
+				// 	tc.ShowService()
 				default:
 					fmt.Print(tc.TC_DEFAULT_MENU)
 				}
