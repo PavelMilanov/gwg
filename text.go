@@ -42,6 +42,7 @@ SERVER_DIR="/etc/wireguard/"
 WG_MANAGER_DIR="${SERVER_DIR}.wg_manager"
 USERS_CONFIG_DIR="${SERVER_DIR}.configs"
 USERS_DIR="${SERVER_DIR}users"
+TC_DIR="${SERVER_DIR}.tc"
 
 command=$1
 version=$2
@@ -65,6 +66,8 @@ function preinstallGwg {
     mkdir $WG_MANAGER_DIR
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
+    mkdir $TC_DIR
+
     echo "Installing wg server..."
     gwg install
 	gwg version

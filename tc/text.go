@@ -1,9 +1,18 @@
 package tc
 
-const TC_DEFAULT_MENU = `Usage:
-	gwg tc show	- просмотр конфигурации службы gwg traffic control.
-	gwg tc up	- включить службу gwg traffic control.
-	gwg tc down	- выключить службу gwg traffic control.	
+const TC_DEFAULT_MENU = `Описание: подсистема классификации трафика по разрешенной полосе пропускания.
+
+	gwg tc service	- управление службой gwg traffic control.
+	gwg tc bw		- управление классами gwg traffic control.
+	gwg tc ft		- управление фильтрами gwg traffic control.	
+`
+const TC_BW_DEFAULT_MENU = `Описание: tc bw - классификатор для задания ограничения скорости.
+
+	gwg tc bw add		- создать новый класс gwg traffic control.
+	gwg tc bw remove	- удалить класс gwg traffic control.
+	gwg tc bw show 		- просмотр существующих классов gwg traffic control.
+
+	Как использовать: gwg tc bw (add|remove|show) -h
 `
 
 const TC_TEMPLATE = `sudo tc qdisc add dev wg0 root handle 1: htb default 1

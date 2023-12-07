@@ -61,6 +61,8 @@ func main() {
 							// tc.UpService(intf)
 						case "down":
 							tc.DownService()
+						case "show":
+							tc.ShowService()
 						}
 					} else {
 						fmt.Print(tc.TC_DEFAULT_MENU)
@@ -76,15 +78,20 @@ func main() {
 							bw.Parse(os.Args[4:])
 							tc.AddBandwidth(*description, *min, *ceil)
 						case "remove":
-							tc.RemoveBandwidth()
+							bw := flag.NewFlagSet("remove", flag.ExitOnError)
+							class := bw.String("id", "", "id класса")
+							bw.Parse(os.Args[4:])
+							tc.RemoveBandwidth(*class)
 						case "show":
 							tc.ShowBandwidth()
+						default:
+							fmt.Print(tc.TC_BW_DEFAULT_MENU)
 						}
 					} else {
-						fmt.Print(tc.TC_DEFAULT_MENU)
+						fmt.Print(tc.TC_BW_DEFAULT_MENU)
 					}
-				// case "show":
-				// 	tc.ShowService()
+				case "ft":
+
 				default:
 					fmt.Print(tc.TC_DEFAULT_MENU)
 				}
