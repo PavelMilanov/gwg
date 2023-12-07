@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"text/template"
 
 	"github.com/PavelMilanov/go-wg-manager/paths"
 )
@@ -77,4 +79,43 @@ func (filter *TcFilter) remove(filters []TcFilter) {
 		fmt.Println(err)
 	}
 	fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\nRemoved successfully\n", filter.Description, filter.UserIp, filter.Class)
+}
+
+/*
+Генерирует файл конфигурации tc.
+*/
+func (tc *TcConfig) config() {
+	file, _ := json.MarshalIndent(tc, "", "\t")
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILE)
+	err := os.WriteFile(filename, file, 0660)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Tc config file generated successfully")
+}
+
+func (tc *TcConfig) generate() {
+	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
+	templ, err := template.New("tc").Parse(TC_TEMPLATE)
+	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
+	err = templ.Execute(file, tc)
+	if err != nil {
+		fmt.Println("Eror creating tc config file")
+		os.Remove(tcFile)
+	}
+	defer file.Close()
+	fmt.Println("Tc executable file generated successfully")
+}
+
+func (tc *TcConfig) createService() {
+	err := os.WriteFile("/etc/systemd/system/tc.service", []byte(TC_SERVICE), 0751)
+	if err != nil {
+		fmt.Println(err)
+	}
+	enable := fmt.Sprintf("systemctl enable tc.service")
+	cmd := exec.Command("bash", "-c", enable)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }

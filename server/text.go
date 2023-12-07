@@ -75,17 +75,8 @@ function preinstallGwg {
 	gwg version
 }
 
-function updateGwg {
-    wget https://github.com/PavelMilanov/go-wg-manager/releases/download/${version}/gwg.tar
-    tar -xzf gwg.tar
-    sudo mv gwg /usr/bin
-    rm gwg.tar
-}
-
 case "$command" in
     install)
         preinstallGwg;;
-	update)
-        updateGwg;;
 esac
 `

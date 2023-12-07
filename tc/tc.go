@@ -4,47 +4,43 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
-	"text/template"
 
 	"github.com/PavelMilanov/go-wg-manager/paths"
 	"github.com/PavelMilanov/go-wg-manager/server"
 )
 
-func ShowService() {
-
-}
-
-func UpService(intIntf string, minSpeed string, ceilSpeed string) {
-	command := fmt.Sprintf("sudo cat /sys/class/net/%s/speed", intIntf)
-	out, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println(err)
+func UpService(minSpeed string, fullSpeed string) {
+	classes := readClassFile()
+	filters := readFilterFile()
+	tc := TcConfig{
+		FullSpeed: fullSpeed,
+		Classes:   classes,
+		Filters:   filters,
 	}
-	fullSpeed := string(out)
-	fmt.Print(fullSpeed)
+	tc.config()
+	tc.generate()
 }
 
 func DownService() {
 
 }
 
-func createTCConfig(config TcConfig) {
-	err := os.Mkdir(paths.TC_DIR, 0660)
-	if err != nil {
-		fmt.Println(err)
-	}
-	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
-	templ, err := template.New("tc").Parse(TC_TEMPLATE)
-	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
-	err = templ.Execute(file, config)
-	if err != nil {
-		fmt.Println("Eror creating tc config file")
-		os.Remove(tcFile)
-	}
-	defer file.Close()
+func ShowService() {
+
 }
+
+// func createTCConfig(config TcConfig) {
+// 	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
+// 	templ, err := template.New("tc").Parse(TC_TEMPLATE)
+// 	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
+// 	err = templ.Execute(file, config)
+// 	if err != nil {
+// 		fmt.Println("Eror creating tc config file")
+// 		os.Remove(tcFile)
+// 	}
+// 	defer file.Close()
+// }
 
 /*
 Генерирует список моделей TcClass и преобразует их в json-файл.

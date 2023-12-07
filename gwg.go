@@ -54,9 +54,11 @@ func main() {
 					if len(os.Args) > 3 {
 						switch os.Args[3] {
 						case "up":
-							// _, intf := setServerParams()
-							tc.UpService("vlan601", "2mbit", "2mbit")
-							// tc.UpService(intf)
+							bw := flag.NewFlagSet("up", flag.ExitOnError)
+							minSpeed := bw.String("m", "50Mbit", "минимальная скорость")
+							FullSpeed := bw.String("f", "950Mbit", "максимальная скорость")
+							bw.Parse(os.Args[4:])
+							tc.UpService(*minSpeed, *FullSpeed)
 						case "down":
 							tc.DownService()
 						case "show":

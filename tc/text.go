@@ -39,6 +39,18 @@ sudo tc filter add dev wg0 protocol ip parent 1:0 u32 match ip dst {{ .UserIp}} 
 {{end}}
 `
 
+const TC_SERVICE = `[Unit]
+Description=Trafic Controller
+After=network.target 
+
+[Service]
+Type=simple
+ExecStart=/etc/wireguard/.tc/tc.sh
+
+[Install]
+WantedBy=multi-user.target
+`
+
 //sudo tc qdisc add dev wg0 root handle 1: htb default 1
 //sudo tc class add dev wg0 parent 1: classid 1:1 htb rate 1000Mbit burst 15k
 //sudo tc class add dev wg0 parent 1:1 classid 1:2 htb rate 2Mbit ceil 5Mbit burst 15k

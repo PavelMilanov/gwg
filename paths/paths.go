@@ -8,5 +8,6 @@ const (
 	TC_DIR           = SERVER_DIR + ".tc"
 	TC_CLASS_FILE    = "classes"
 	TC_FILTER_FILE   = "filters"
+	TC_FILE          = "tc"
 	TC_CONFIG_FILE   = "tc.sh"
 )
