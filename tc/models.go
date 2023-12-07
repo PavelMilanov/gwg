@@ -112,10 +112,20 @@ func (tc *TcConfig) createService() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	enable := fmt.Sprintf("systemctl enable tc.service")
+	enable := fmt.Sprintf("sudo systemctl enable tc.service")
 	cmd := exec.Command("bash", "-c", enable)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
+}
+
+func (tc *TcConfig) start() {
+	command := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+	fmt.Println("Gwg tc service started")
 }
