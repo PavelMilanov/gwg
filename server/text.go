@@ -35,6 +35,7 @@ const MENU = `Описание: gwg - cli-менеджер wireguard:
     gwg block	- блокировка пользователя.
     gwg unblock - разблокировка пользователя.
     gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
+
 `
 
 const GWG_UTILS = `#!/usr/bin/bash
