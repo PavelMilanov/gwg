@@ -24,7 +24,9 @@ const TC_FT_DEFAULT_MENU = `Описание: tc ft - правила для кл
 	Как использовать: gwg tc ft (add|remove|show) -h 
 `
 
-const TC_TEMPLATE = `sudo tc qdisc add dev wg0 root handle 1: htb default 1
+const TC_TEMPLATE = `#!/usr/bin/bash
+
+sudo tc qdisc add dev wg0 root handle 1: htb default 1
 sudo tc class add dev wg0 parent 1: classid 1:1 htb rate {{ .FullSpeed}} burst 15k
 {{ range .Classes}}
 sudo tc class add dev wg0 parent 1:1 classid 1:{{ .Class}} htb rate {{ .MinSpeed}} ceil {{ .CeilSpeed}} burst 15k

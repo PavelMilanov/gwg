@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/PavelMilanov/go-wg-manager/paths"
+	"github.com/PavelMilanov/go-wg-manager/server"
 )
 
 func ShowService() {
@@ -78,12 +79,12 @@ func RemoveBandwidth(class string) {
 		newConfigs = append(newConfigs, config)
 	}
 	removeConfig.remove(newConfigs)
-	file, _ := json.MarshalIndent(newConfigs, "", " ")
-	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
-	err := os.WriteFile(filename, file, 0660)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// file, _ := json.MarshalIndent(newConfigs, "", " ")
+	// filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
+	// err := os.WriteFile(filename, file, 0660)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 }
 
 /*
@@ -110,14 +111,71 @@ func readClassFile() []TcClass {
 	return config
 }
 
-func AddFilter(description string, user string, class string) {
+/*
+Читает файл с tc filter и преобразовывает в список моделей TcFilter.
+*/
+func readFilterFile() []TcFilter {
+	filter := []TcFilter{}
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
+	content, err := os.ReadFile(filename)
+	if err != nil { // // если не было создано ни одного фильтра, файла еще нет
+		fmt.Println("filters not configured")
+	}
+	json.Unmarshal(content, &filter)
+	return filter
 
 }
 
-func RemoveFilter(filter string) {
-
+/*
+Генерирует список моделей TcFilter и преобразует их в json-файл.
+*/
+func AddFilter(description string, userName string, classId string) {
+	classes := readClassFile()
+	class := TcClass{}
+	users := server.ReadClientConfigFiles()
+	user := server.UserConfig{}
+	for _, item := range users {
+		if item.Name == userName {
+			user = item
+		}
+	}
+	for _, item := range classes {
+		if item.Class == classId {
+			class = item
+			break
+		}
+	}
+	filters := readFilterFile()
+	filter := TcFilter{
+		Description: description,
+		UserIp:      user.ClientPrivateKey,
+		Class:       class.Class,
+	}
+	filter.add(filters)
 }
 
+/*
+Генерирует список моделей TcFilter и преобразует их в json-файл.
+*/
+func RemoveFilter(filterDesc string) {
+	filters := readFilterFile()
+	newFilters := []TcFilter{}
+	removeFilter := TcFilter{}
+	for _, filter := range filters {
+		if filter.Description == filterDesc {
+			removeFilter = filter
+			continue
+		}
+	}
+	removeFilter.remove(newFilters)
+}
+
+/*
+Выводит форматированный вывод json-файла.
+*/
 func ShowFilter() {
-
+	filters := readFilterFile()
+	for _, filter := range filters {
+		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n", filter.Description, filter.UserIp, filter.Class)
+	}
 }

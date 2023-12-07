@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -64,7 +64,7 @@ func readServerConfigFile() WgServerConfig {
 /*
 Чтение конфигурациионных файлов клиентов.
 */
-func readClientConfigFiles() []UserConfig {
+func ReadClientConfigFiles() []UserConfig {
 	files, _ := os.ReadDir(paths.USERS_CONFIG_DIR)
 	config := UserConfig{}
 	var configs []UserConfig
@@ -82,7 +82,7 @@ func readClientConfigFiles() []UserConfig {
 /*
 Добавление пользователя.
 */
-func addUSer(alias string) {
+func AddUSer(alias string) {
 	clientPrivKey, clientPubKey := generateKeys()
 	clientip := setClientIp()
 	server := readServerConfigFile()
@@ -98,7 +98,7 @@ func addUSer(alias string) {
 	}
 	config.addConfigUser(alias)
 	writeClientConfig(config, alias)
-	users := readClientConfigFiles()
+	users := ReadClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
@@ -108,7 +108,7 @@ func addUSer(alias string) {
 /*
 Блокировка/разблокировка пользователя.
 */
-func changeStatusUser(alias string, state string) {
+func ChangeStatusUser(alias string, state string) {
 	server := readServerConfigFile()
 	jsonfile := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, alias)
 	config := UserConfig{}
@@ -126,7 +126,7 @@ func changeStatusUser(alias string, state string) {
 	os.Remove(jsonfile)
 	config.addConfigUser(alias)
 	writeClientConfig(config, alias)
-	users := readClientConfigFiles()
+	users := ReadClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
@@ -137,7 +137,7 @@ func changeStatusUser(alias string, state string) {
 /*
 Удаление пользователя.
 */
-func removeUser(alias string) {
+func RemoveUser(alias string) {
 	server := readServerConfigFile()
 	configfile := fmt.Sprintf("%s/%s.conf", paths.USERS_DIR, alias)
 	jsonfile := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, alias)
@@ -148,7 +148,7 @@ func removeUser(alias string) {
 			fmt.Println(err)
 		}
 	}
-	users := readClientConfigFiles()
+	users := ReadClientConfigFiles()
 	server.Users = users
 	writeServerConfig(server, server.Alias)
 	commandServer("restart")
@@ -158,7 +158,7 @@ func removeUser(alias string) {
 /*
 Установка Wireguard сервера.
 */
-func installServer(alias string, network string, port int) {
+func InstallServer(alias string, network string, port int) {
 	serverFile := fmt.Sprintf("%s/%s.conf", paths.SERVER_DIR, alias)
 	os.Create(serverFile)
 	os.Mkdir(paths.WG_MANAGER_DIR, 0660)
@@ -199,7 +199,7 @@ func configureServer(priv string, pub string, alias string, addr string, port in
 /*
 Парсинг и преобразование данных из wg show dump
 */
-func readWgDump() {
+func ReadWgDump() {
 	// sudo wg show wg0 dump | wc -l = x - узнаем сколько строк в фале
 	// sed -n '2,x' - выводим все, кроме 1ой
 	// sed -n 'xp' - выводим определенную строку
@@ -215,7 +215,7 @@ func readWgDump() {
 		fmt.Println(err)
 	}
 	pool := []WireguardDump{}
-	configs := readClientConfigFiles()
+	configs := ReadClientConfigFiles()
 	for i := 2; i < int(count)+1; i++ {
 		// command := fmt.Sprintf("sed -n '%dp' dump.log", i)
 		command := fmt.Sprintf("sudo wg show wg0 dump | sed -n '%dp'", i)
@@ -249,7 +249,7 @@ func readWgDump() {
 /*
 Настраивает систему перед установкой gwg.
 */
-func configureSystem() {
+func ConfigureSystem() {
 	initSystem()
 	installFile := "./setup.sh"
 	err := os.WriteFile(installFile, []byte(GWG_UTILS), 0751)

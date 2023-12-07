@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ type WgServerConfig struct {
 Генерирует вспомогательный конфигурационый файл (json) сервера для работы gwg.
 */
 func (config *WgServerConfig) createServerConfigFile() {
-	file, _ := json.MarshalIndent(config, "", " ")
+	file, _ := json.MarshalIndent(config, "", "\t")
 	filename := fmt.Sprintf("%s/%s.json", paths.WG_MANAGER_DIR, config.Alias)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -52,7 +52,7 @@ type UserConfig struct {
 Генерирует вспомогательный конфигурационый файл (json) клиента для работы gwg.
 */
 func (config *UserConfig) addConfigUser(fileName string) {
-	file, _ := json.MarshalIndent(config, "", " ")
+	file, _ := json.MarshalIndent(config, "", "\t")
 	filename := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, fileName)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {

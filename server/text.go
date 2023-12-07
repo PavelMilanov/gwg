@@ -1,4 +1,4 @@
-package main
+package server
 
 const SERVER_TEMPLATE = `[Interface]
 PrivateKey = {{ .ServerPrivateKey}}
