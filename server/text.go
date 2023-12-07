@@ -26,14 +26,15 @@ AllowedIPs = 0.0.0.0/0
 PersistentKeepalive = 20
 `
 
-const MENU = `Меню утилиты gwg-manager:
-gwg show	- просмотр состояния wireguard-сервера.
-gwg stat	- просмотр подробной статистики wireguard-сервера. 
-gwg add		- добавления пользователя.
-gwg remove	- удаление пользователя.
-gwg block	- блокировка пользователя.
-gwg unblock     - разблокировка пользователя.
-gwg tc          - управление входящим трафиком.
+const MENU = `Описание: gwg - cli-менеджер wireguard:
+
+    gwg show    - просмотр состояния wireguard-сервера.
+    gwg stat	- просмотр подробной статистики wireguard-сервера. 
+    gwg add     - добавления пользователя.
+    gwg remove	- удаление пользователя.
+    gwg block	- блокировка пользователя.
+    gwg unblock - разблокировка пользователя.
+    gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
 `
 
 const GWG_UTILS = `#!/usr/bin/bash
