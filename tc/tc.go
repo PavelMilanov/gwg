@@ -24,7 +24,6 @@ func UpService(intIntf string, minSpeed string, ceilSpeed string) {
 	}
 	fullSpeed := string(out)
 	fmt.Print(fullSpeed)
-	// createTCConfig()
 }
 
 func DownService() {
