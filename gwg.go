@@ -91,7 +91,28 @@ func main() {
 						fmt.Print(tc.TC_BW_DEFAULT_MENU)
 					}
 				case "ft":
-
+					if len(os.Args) > 3 {
+						switch os.Args[3] {
+						case "add":
+							bw := flag.NewFlagSet("add", flag.ExitOnError)
+							description := bw.String("d", "", "описание")
+							user := bw.String("u", "", "имя пользователя")
+							class := bw.String("c", "1", "полоса пропускания")
+							bw.Parse(os.Args[4:])
+							tc.AddFilter(*description, *user, *class)
+						case "remove":
+							bw := flag.NewFlagSet("remove", flag.ExitOnError)
+							filter := bw.String("id", "", "id фильтра")
+							bw.Parse(os.Args[4:])
+							tc.RemoveFilter(*filter)
+						case "show":
+							tc.ShowFilter()
+						default:
+							fmt.Print(tc.TC_FT_DEFAULT_MENU)
+						}
+					} else {
+						fmt.Print(tc.TC_FT_DEFAULT_MENU)
+					}
 				default:
 					fmt.Print(tc.TC_DEFAULT_MENU)
 				}

@@ -48,7 +48,6 @@ func createTCConfig(config TcConfig) {
 
 /*
 Генерирует список моделей TcClass и преобразует их в json-файл.
-Добавляет модель в файл.
 */
 func AddBandwidth(description string, minSpeed string, ceilSpeed string) {
 	configs := readClassFile()
@@ -61,39 +60,34 @@ func AddBandwidth(description string, minSpeed string, ceilSpeed string) {
 		CeilSpeed:   ceilSpeed,
 	}
 	configs = append(configs, config)
-	file, _ := json.MarshalIndent(configs, "", " ")
-	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
-	err := os.WriteFile(filename, file, 0660)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("class added successfully")
+	config.add(configs)
 }
 
 /*
 Генерирует список моделей TcClass и преобразует их в json-файл.
-Удаляет модель из файла.
 */
 func RemoveBandwidth(class string) {
 	configs := readClassFile()
 	newConfigs := []TcClass{}
+	removeConfig := TcClass{}
 	for _, config := range configs {
 		if config.Class == class {
+			removeConfig = config
 			continue
 		}
 		newConfigs = append(newConfigs, config)
 	}
+	removeConfig.remove(newConfigs)
 	file, _ := json.MarshalIndent(newConfigs, "", " ")
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("class removed successfully")
 }
 
 /*
-Выводит форматированный вывод json-файла tc/classes
+Выводит форматированный вывод json-файла.
 */
 func ShowBandwidth() {
 	configs := readClassFile()
@@ -114,4 +108,16 @@ func readClassFile() []TcClass {
 	}
 	json.Unmarshal(content, &config)
 	return config
+}
+
+func AddFilter(description string, user string, class string) {
+
+}
+
+func RemoveFilter(filter string) {
+
+}
+
+func ShowFilter() {
+
 }

@@ -15,6 +15,15 @@ const TC_BW_DEFAULT_MENU = `Описание: tc bw - классификатор
 	Как использовать: gwg tc bw (add|remove|show) -h
 `
 
+const TC_FT_DEFAULT_MENU = `Описание: tc ft - правила для классификации трафика по созданным классам.
+
+	gwg tc ft add		- создать новое правило gwg traffic control.
+	gwg tc ft remove	- удалить правило gwg traffic control.
+	gwg tc ft show 		- просмотр существующих правил gwg traffic control.
+
+	Как использовать: gwg tc ft (add|remove|show) -h 
+`
+
 const TC_TEMPLATE = `sudo tc qdisc add dev wg0 root handle 1: htb default 1
 sudo tc class add dev wg0 parent 1: classid 1:1 htb rate {{ .FullSpeed}} burst 15k
 {{ range .Classes}}
