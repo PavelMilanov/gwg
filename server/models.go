@@ -1,9 +1,11 @@
-package main
+package server
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/PavelMilanov/go-wg-manager/paths"
 )
 
 /*
@@ -24,10 +26,12 @@ type WgServerConfig struct {
 Генерирует вспомогательный конфигурационый файл (json) сервера для работы gwg.
 */
 func (config *WgServerConfig) createServerConfigFile() {
-	file, _ := json.MarshalIndent(config, "", " ")
-	filename := fmt.Sprintf("%s/%s.json", WG_MANAGER_DIR, config.Alias)
+	file, _ := json.MarshalIndent(config, "", "\t")
+	filename := fmt.Sprintf("%s/%s.json", paths.WG_MANAGER_DIR, config.Alias)
 	err := os.WriteFile(filename, file, 0660)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 /*
@@ -48,10 +52,12 @@ type UserConfig struct {
 Генерирует вспомогательный конфигурационый файл (json) клиента для работы gwg.
 */
 func (config *UserConfig) addConfigUser(fileName string) {
-	file, _ := json.MarshalIndent(config, "", " ")
-	filename := fmt.Sprintf("%s/%s.json", USERS_CONFIG_DIR, fileName)
+	file, _ := json.MarshalIndent(config, "", "\t")
+	filename := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, fileName)
 	err := os.WriteFile(filename, file, 0660)
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 /*

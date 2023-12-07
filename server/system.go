@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -9,41 +9,22 @@ import (
 	"strings"
 )
 
-const (
-	SERVER_DIR       = "/etc/wireguard/"
-	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
-	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
-	USERS_DIR        = SERVER_DIR + "users"
-)
-
 /*
 Проверка операционной системы на совместимость.
 */
 func initSystem() {
 	_, err := exec.Command("bash", "-c", "cat /etc/os-release").Output()
-	check(err)
-}
-
-/*
-Создает рабочие директории.
-*/
-func createProjectDirs() {
-	err := os.Chdir(SERVER_DIR)
-	fmt.Println("Creating project directories...")
-	check(err)
-	dirs := [3]string{WG_MANAGER_DIR, USERS_CONFIG_DIR, USERS_DIR}
-	for _, dir := range dirs {
-		err := os.MkdirAll(dir, 0770)
-		check(err)
+	if err != nil {
+		fmt.Println("Operating system does not support")
+		os.Exit(1)
 	}
-	fmt.Println("Done.")
 }
 
 /*
 Динамическое назначение приватных ip-адресов клиентам.
 */
 func setClientIp() string {
-	configs := readClientConfigFiles()
+	configs := ReadClientConfigFiles()
 	var pattern = 2
 	var ipv4 string
 	if len(configs) == 0 {
@@ -56,7 +37,6 @@ func setClientIp() string {
 		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
 		IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
 		IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
-		fmt.Println(pattern, IPv4byte4)
 		if pattern < IPv4byte4 {
 			ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern)
 			break
@@ -74,18 +54,24 @@ func setClientIp() string {
 */
 func setServerParams() (string, string) {
 	out, err := exec.Command("bash", "-c", "ip r").Output()
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	var serverIp, serverIntf string
 	defaultRoute := strings.Split(string(out), " ")[:5] // первая строка "default via 192.168.11.1 dev vlan601 proto static metric 404 ..."
 	ip := defaultRoute[2]
 	gate4 := net.ParseIP(ip)
 	serverIntf = defaultRoute[4]
 	interfaces, err := net.Interfaces()
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	for _, interf := range interfaces {
 		// Список адресов для каждого сетевого интерфейса
 		addrs, err := interf.Addrs()
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 		for _, addr := range addrs {
 			data := addr.String()
 			ip, ipnet, _ := net.ParseCIDR(data)
@@ -103,7 +89,6 @@ func setServerParams() (string, string) {
 func generateKeys() (string, string) {
 	dir := os.TempDir()
 	os.Chdir(dir)
-	fmt.Println("Generate keys...")
 	cmd := exec.Command("bash", "-c", "wg genkey | tee privatekey | wg pubkey | tee publickey")
 	cmd.Stderr = os.Stderr
 	cmd.Run()
@@ -118,9 +103,11 @@ func generateKeys() (string, string) {
 /*
 Просмотр статистики wg.
 */
-func showPeers() {
+func ShowPeers() {
 	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(string(out))
 }
 
@@ -130,7 +117,8 @@ func showPeers() {
 func commandServer(cmd string) {
 	server := readServerConfigFile()
 	command := fmt.Sprintf("sudo systemctl %s wg-quick@%s.service", cmd, server.Alias)
-	out, err := exec.Command("bash", "-c", command).Output()
-	check(err)
-	fmt.Println(string(out))
+	_, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
