@@ -2,28 +2,28 @@ package tc
 
 const TC_DEFAULT_MENU = `Описание: подсистема классификации трафика по разрешенной полосе пропускания.
 
-	gwg tc service	- управление службой gwg traffic control.
-	gwg tc bw		- управление классами gwg traffic control.
-	gwg tc ft		- управление фильтрами gwg traffic control.
+gwg tc service	- управление службой gwg traffic control.
+gwg tc bw		- управление классами gwg traffic control.
+gwg tc ft		- управление фильтрами gwg traffic control.
 
 `
 const TC_BW_DEFAULT_MENU = `Описание: tc bw - классификатор для задания ограничения скорости.
 
-	gwg tc bw add		- создать новый класс gwg traffic control.
-	gwg tc bw remove	- удалить класс gwg traffic control.
-	gwg tc bw show 		- просмотр существующих классов gwg traffic control.
+gwg tc bw add		- создать новый класс gwg traffic control.
+gwg tc bw remove	- удалить класс gwg traffic control.
+gwg tc bw show		- просмотр существующих классов gwg traffic control.
 
-	Как использовать: gwg tc bw (add|remove|show) -h
+Как использовать: gwg tc bw (add|remove|show) -h
 
 `
 
 const TC_FT_DEFAULT_MENU = `Описание: tc ft - правила для классификации трафика по созданным классам.
 
-	gwg tc ft add		- создать новое правило gwg traffic control.
-	gwg tc ft remove	- удалить правило gwg traffic control.
-	gwg tc ft show 		- просмотр существующих правил gwg traffic control.
+gwg tc ft add		- создать новое правило gwg traffic control.
+gwg tc ft remove	- удалить правило gwg traffic control.
+gwg tc ft show		- просмотр существующих правил gwg traffic control.
 
-	Как использовать: gwg tc ft (add|remove|show) -h
+Как использовать: gwg tc ft (add|remove|show) -h
 
 `
 

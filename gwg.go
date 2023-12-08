@@ -72,7 +72,7 @@ func main() {
 						switch os.Args[3] {
 						case "add":
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
-							description := bw.String("d", "", "описание")
+							description := bw.String("d", "default", "описание")
 							min := bw.String("m", "50Mbit", "минимальная скорость")
 							ceil := bw.String("c", "950Mbit", "допустимая скорость")
 							bw.Parse(os.Args[4:])
@@ -97,7 +97,7 @@ func main() {
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
 							description := bw.String("d", "", "описание")
 							user := bw.String("u", "", "имя пользователя")
-							class := bw.String("c", "1", "полоса пропускания")
+							class := bw.String("c", "1", "класс")
 							bw.Parse(os.Args[4:])
 							tc.AddFilter(*description, *user, *class)
 						case "remove":

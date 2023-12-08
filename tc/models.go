@@ -33,7 +33,10 @@ type TcFilter struct {
 Добавляет модель в конфигурационный файл.
 */
 func (class *TcClass) add(configs []TcClass) {
-	file, _ := json.MarshalIndent(configs, "", "\t")
+	file, alert := json.MarshalIndent(configs, "", "\t")
+	if alert != nil {
+		fmt.Println(alert)
+	}
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -46,7 +49,10 @@ func (class *TcClass) add(configs []TcClass) {
 Удаляет модель из конфигурационного файла.
 */
 func (class *TcClass) remove(configs []TcClass) {
-	file, _ := json.MarshalIndent(configs, "", "\t")
+	file, alert := json.MarshalIndent(configs, "", "\t")
+	if alert != nil {
+		fmt.Println(alert)
+	}
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -59,7 +65,10 @@ func (class *TcClass) remove(configs []TcClass) {
 Добавляет модель в конфигурационный файл.
 */
 func (filter *TcFilter) add(filters []TcFilter) {
-	file, _ := json.MarshalIndent(filters, "", "\t")
+	file, alert := json.MarshalIndent(filters, "", "\t")
+	if alert != nil {
+		fmt.Println(alert)
+	}
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -72,7 +81,10 @@ func (filter *TcFilter) add(filters []TcFilter) {
 Удаляет модель из конфигурационного файла.
 */
 func (filter *TcFilter) remove(filters []TcFilter) {
-	file, _ := json.MarshalIndent(filters, "", "\t")
+	file, alert := json.MarshalIndent(filters, "", "\t")
+	if alert != nil {
+		fmt.Println(alert)
+	}
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -108,7 +120,7 @@ func (tc *TcConfig) generate() {
 }
 
 func (tc *TcConfig) createService() {
-	err := os.WriteFile("/etc/systemd/system/tc.service", []byte(TC_SERVICE), 0751)
+	err := os.WriteFile("/etc/wireguard/.tc/tc.service", []byte(TC_SERVICE), 0751)
 	if err != nil {
 		fmt.Println(err)
 	}

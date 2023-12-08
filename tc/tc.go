@@ -143,7 +143,7 @@ func AddFilter(description string, userName string, classId string) {
 	filters := readFilterFile()
 	filter := TcFilter{
 		Description: description,
-		UserIp:      user.ClientPrivateKey,
+		UserIp:      user.ClientLocalAddress,
 		Class:       class.Class,
 	}
 	filter.add(filters)
