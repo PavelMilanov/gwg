@@ -162,6 +162,7 @@ func RemoveFilter(filterDesc string) {
 			removeFilter = filter
 			continue
 		}
+		newFilters = append(newFilters, filter)
 	}
 	removeFilter.remove(newFilters)
 }
