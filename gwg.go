@@ -61,6 +61,8 @@ func main() {
 							tc.UpService(*minSpeed, *FullSpeed)
 						case "down":
 							tc.DownService()
+						case "restart":
+							tc.RestartService()
 						case "show":
 							tc.ShowService()
 						}

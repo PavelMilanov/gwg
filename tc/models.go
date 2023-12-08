@@ -119,8 +119,8 @@ func (tc *TcConfig) createService() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	enable := fmt.Sprintf("sudo systemctl enable tc.service")
-	cmd := exec.Command("bash", "-c", enable)
+	start := fmt.Sprintf("sudo systemctl start tc.service")
+	cmd := exec.Command("bash", "-c", start)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr

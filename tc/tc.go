@@ -20,27 +20,20 @@ func UpService(minSpeed string, fullSpeed string) {
 	}
 	tc.config()
 	tc.generate()
+	tc.createService()
 }
 
 func DownService() {
 
 }
 
-func ShowService() {
+func RestartService() {
 
 }
 
-// func createTCConfig(config TcConfig) {
-// 	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
-// 	templ, err := template.New("tc").Parse(TC_TEMPLATE)
-// 	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
-// 	err = templ.Execute(file, config)
-// 	if err != nil {
-// 		fmt.Println("Eror creating tc config file")
-// 		os.Remove(tcFile)
-// 	}
-// 	defer file.Close()
-// }
+func ShowService() {
+
+}
 
 /*
 Генерирует список моделей TcClass и преобразует их в json-файл.
@@ -74,12 +67,6 @@ func RemoveBandwidth(class string) {
 		newConfigs = append(newConfigs, config)
 	}
 	removeConfig.remove(newConfigs)
-	// file, _ := json.MarshalIndent(newConfigs, "", " ")
-	// filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
-	// err := os.WriteFile(filename, file, 0660)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
 }
 
 /*
@@ -90,35 +77,6 @@ func ShowBandwidth() {
 	for _, config := range configs {
 		fmt.Printf("class: %s\n\tdescription: %s;\n\tmin-rate: %s;\n\tcail-rate: %s\n\n", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
 	}
-}
-
-/*
-Читает файл с tc class и преобразовывает в список моделей TcClass.
-*/
-func readClassFile() []TcClass {
-	config := []TcClass{}
-	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
-	content, err := os.ReadFile(filename)
-	if err != nil { // // если не было создано ни одного класса, файла еще нет
-		fmt.Println("classes not configured")
-	}
-	json.Unmarshal(content, &config)
-	return config
-}
-
-/*
-Читает файл с tc filter и преобразовывает в список моделей TcFilter.
-*/
-func readFilterFile() []TcFilter {
-	filter := []TcFilter{}
-	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
-	content, err := os.ReadFile(filename)
-	if err != nil { // // если не было создано ни одного фильтра, файла еще нет
-		fmt.Println("filters not configured")
-	}
-	json.Unmarshal(content, &filter)
-	return filter
-
 }
 
 /*
@@ -134,11 +92,19 @@ func AddFilter(description string, userName string, classId string) {
 			user = item
 		}
 	}
+	if (TcClass{}) == class {
+		fmt.Println("Class not found. Try gwg show tc bw show")
+		os.Exit(1)
+	}
 	for _, item := range classes {
 		if item.Class == classId {
 			class = item
 			break
 		}
+	}
+	if (server.UserConfig{}) == user {
+		fmt.Println("User not found. Try gwg stat")
+		os.Exit(1)
 	}
 	filters := readFilterFile()
 	filter := TcFilter{
@@ -175,4 +141,46 @@ func ShowFilter() {
 	for _, filter := range filters {
 		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n", filter.Description, filter.UserIp, filter.Class)
 	}
+}
+
+/*
+Читает файл с tc class и преобразовывает в список моделей TcClass.
+*/
+func readClassFile() []TcClass {
+	config := []TcClass{}
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
+	content, err := os.ReadFile(filename)
+	if err != nil { // // если не было создано ни одного класса, файла еще нет
+		fmt.Println("Classes not configured")
+	}
+	json.Unmarshal(content, &config)
+	return config
+}
+
+/*
+Читает файл с tc filter и преобразовывает в список моделей TcFilter.
+*/
+func readFilterFile() []TcFilter {
+	filter := []TcFilter{}
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
+	content, err := os.ReadFile(filename)
+	if err != nil { // // если не было создано ни одного фильтра, файла еще нет
+		fmt.Println("Filters not configured")
+	}
+	json.Unmarshal(content, &filter)
+	return filter
+}
+
+/*
+Читает файл tc и преобразовывает в модель TcConfig.
+*/
+func readTcFile() TcConfig {
+	tc := TcConfig{}
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILE)
+	content, err := os.ReadFile(filename)
+	if err != nil { // // если не было создано ни одного фильтра, файла еще нет
+		fmt.Println("tc not configured")
+	}
+	json.Unmarshal(content, &tc)
+	return tc
 }
