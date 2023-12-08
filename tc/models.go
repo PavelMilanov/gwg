@@ -33,10 +33,7 @@ type TcFilter struct {
 Добавляет модель в конфигурационный файл.
 */
 func (class *TcClass) add(configs []TcClass) {
-	file, alert := json.MarshalIndent(configs, "", "\t")
-	if alert != nil {
-		fmt.Println(alert)
-	}
+	file, _ := json.MarshalIndent(configs, "", "\t")
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -49,10 +46,7 @@ func (class *TcClass) add(configs []TcClass) {
 Удаляет модель из конфигурационного файла.
 */
 func (class *TcClass) remove(configs []TcClass) {
-	file, alert := json.MarshalIndent(configs, "", "\t")
-	if alert != nil {
-		fmt.Println(alert)
-	}
+	file, _ := json.MarshalIndent(configs, "", "\t")
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CLASS_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -65,10 +59,7 @@ func (class *TcClass) remove(configs []TcClass) {
 Добавляет модель в конфигурационный файл.
 */
 func (filter *TcFilter) add(filters []TcFilter) {
-	file, alert := json.MarshalIndent(filters, "", "\t")
-	if alert != nil {
-		fmt.Println(alert)
-	}
+	file, _ := json.MarshalIndent(filters, "", "\t")
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -81,10 +72,7 @@ func (filter *TcFilter) add(filters []TcFilter) {
 Удаляет модель из конфигурационного файла.
 */
 func (filter *TcFilter) remove(filters []TcFilter) {
-	file, alert := json.MarshalIndent(filters, "", "\t")
-	if alert != nil {
-		fmt.Println(alert)
-	}
+	file, _ := json.MarshalIndent(filters, "", "\t")
 	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_FILTER_FILE)
 	err := os.WriteFile(filename, file, 0660)
 	if err != nil {
@@ -94,7 +82,7 @@ func (filter *TcFilter) remove(filters []TcFilter) {
 }
 
 /*
-Генерирует файл конфигурации tc.
+Генерирует json файл конфигурации tc.
 */
 func (tc *TcConfig) config() {
 	file, _ := json.MarshalIndent(tc, "", "\t")
@@ -106,6 +94,9 @@ func (tc *TcConfig) config() {
 	fmt.Println("Tc config file generated successfully")
 }
 
+/*
+Генерирует исполняемый файл конфигурации tc.
+*/
 func (tc *TcConfig) generate() {
 	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
 	templ, err := template.New("tc").Parse(TC_TEMPLATE)
@@ -119,8 +110,12 @@ func (tc *TcConfig) generate() {
 	fmt.Println("Tc executable file generated successfully")
 }
 
+/*
+Генерирует файл службы tc и запускает ее.
+*/
 func (tc *TcConfig) createService() {
-	err := os.WriteFile("/etc/wireguard/.tc/tc.service", []byte(TC_SERVICE), 0751)
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_SERVICE_FILE)
+	err := os.WriteFile(filename, []byte(TC_SERVICE), 0751)
 	if err != nil {
 		fmt.Println(err)
 	}

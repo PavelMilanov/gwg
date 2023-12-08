@@ -146,6 +146,7 @@ func AddFilter(description string, userName string, classId string) {
 		UserIp:      user.ClientLocalAddress,
 		Class:       class.Class,
 	}
+	filters = append(filters, filter)
 	filter.add(filters)
 }
 
