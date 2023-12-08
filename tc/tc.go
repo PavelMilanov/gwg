@@ -10,6 +10,9 @@ import (
 	"github.com/PavelMilanov/go-wg-manager/server"
 )
 
+/*
+Включение модуля gwg tc.
+*/
 func UpService(minSpeed string, fullSpeed string) {
 	classes := readClassFile()
 	filters := readFilterFile()
@@ -21,13 +24,32 @@ func UpService(minSpeed string, fullSpeed string) {
 	tc.config()
 	tc.generate()
 	tc.createService()
+	tc.start()
 }
 
+/*
+Выключение модуля gwg tc.
+*/
 func DownService() {
+	tc := readTcFile()
+	tc.removeSerice()
+	tc.down()
 
 }
 
+/*
+Применение изменений конфигурации службы gwg tc.
+*/
 func RestartService() {
+	tc := readTcFile()
+	classes := readClassFile()
+	filters := readFilterFile()
+	tc.Classes = classes
+	tc.Filters = filters
+	tc.config()
+	tc.generate()
+	tc.down()
+	tc.start()
 
 }
 
