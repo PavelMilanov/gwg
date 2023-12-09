@@ -2,19 +2,19 @@ package tc
 
 const TC_DEFAULT_MENU = `Описание: подсистема классификации трафика по разрешенной полосе пропускания.
 
-gwg tc service	- управление службой gwg traffic control.
-gwg tc bw		- управление классами gwg traffic control.
-gwg tc ft		- управление фильтрами gwg traffic control.
+gwg tc service - управление службой gwg traffic control.
+gwg tc bw      - управление классами gwg traffic control.
+gwg tc ft      - управление фильтрами gwg traffic control.
 
 Помощь: gwg tc (service|bw|ft) -h
 `
 
 const TC_SERVICE_DEFAULT_MENU = `Описание: tc service - управление службой gwg trafic control.
 
-gwg tc service up		- включить службу (по-умолчанию выключена).
-gwg tc service down		- выключииь службу.
-gwg tc service restart	- перечитать конфигурацию и перезапустить службу.
-gwg tc service show		- посмотреть текущую конфигурацию службы.
+gwg tc service up      - включить службу (по-умолчанию выключена).
+gwg tc service down    - выключииь службу.
+gwg tc service restart - перечитать конфигурацию и перезапустить службу.
+gwg tc service show    - посмотреть текущую конфигурацию службы.
 
 Помощь: gwg tc service (up|down|restart|show) -h
 
@@ -22,9 +22,9 @@ gwg tc service show		- посмотреть текущую конфигурац�
 
 const TC_BW_DEFAULT_MENU = `Описание: tc bw - классификатор для задания ограничения скорости.
 
-gwg tc bw add		- создать новый класс gwg traffic control.
-gwg tc bw remove	- удалить класс gwg traffic control.
-gwg tc bw show		- просмотр существующих классов gwg traffic control.
+gwg tc bw add    - создать новый класс gwg traffic control.
+gwg tc bw remove - удалить класс gwg traffic control.
+gwg tc bw show   - просмотр существующих классов gwg traffic control.
 
 Помощь: gwg tc bw (add|remove|show) -h
 
@@ -32,9 +32,9 @@ gwg tc bw show		- просмотр существующих классов gwg t
 
 const TC_FT_DEFAULT_MENU = `Описание: tc ft - правила для классификации трафика по созданным классам.
 
-gwg tc ft add		- создать новое правило gwg traffic control.
-gwg tc ft remove	- удалить правило gwg traffic control.
-gwg tc ft show		- просмотр существующих правил gwg traffic control.
+gwg tc ft add    - создать новое правило gwg traffic control.
+gwg tc ft remove - удалить правило gwg traffic control.
+gwg tc ft show   - просмотр существующих правил gwg traffic control.
 
 Помощь: gwg tc ft (add|remove|show) -h
 
