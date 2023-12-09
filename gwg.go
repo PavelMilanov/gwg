@@ -97,7 +97,7 @@ func main() {
 						case "add":
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
 							description := bw.String("d", "", "описание")
-							user := bw.String("u", "", "имя пользователя")
+							user := bw.String("u", "all", "имя пользователя")
 							class := bw.String("c", "1", "класс")
 							bw.Parse(os.Args[4:])
 							tc.AddFilter(*description, *user, *class)

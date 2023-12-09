@@ -30,7 +30,7 @@ wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6/gwg.linux_amd6
 - Распаковать архив:
 
 ```bash
-tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
+tar -xvf gwg.linux_amd64.tar
 ```
 
 - Запустить установку:

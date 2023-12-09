@@ -123,35 +123,47 @@ func ShowBandwidth() {
 func AddFilter(description string, userName string, classId string) {
 	classes := readClassFile()
 	class := TcClass{}
-	users := server.ReadClientConfigFiles()
-	user := server.UserConfig{}
-	for _, item := range users {
-		if item.Name == userName {
-			user = item
-		}
-	}
-	if (TcClass{}) == class {
-		fmt.Println("Class not found. Try gwg show tc bw show")
-		os.Exit(1)
-	}
+	filters := readFilterFile()
 	for _, item := range classes {
 		if item.Class == classId {
 			class = item
 			break
 		}
 	}
-	if (server.UserConfig{}) == user {
-		fmt.Println("User not found. Try gwg stat")
+	if (TcClass{}) == class {
+		fmt.Println("Class not found. Try gwg show tc bw show")
 		os.Exit(1)
 	}
-	filters := readFilterFile()
-	filter := TcFilter{
-		Description: description,
-		UserIp:      user.ClientLocalAddress,
-		Class:       class.Class,
+	if userName == "all" {
+		user := "10.0.0.0/24"
+		filter := TcFilter{
+			Description: description,
+			UserIp:      user,
+			Class:       class.Class,
+		}
+		filters = append(filters, filter)
+		filter.add(filters)
+
+	} else {
+		users := server.ReadClientConfigFiles()
+		user := server.UserConfig{}
+		for _, item := range users {
+			if item.Name == userName {
+				user = item
+			}
+		}
+		if (server.UserConfig{}) == user {
+			fmt.Println("User not found. Try gwg stat")
+			os.Exit(1)
+		}
+		filter := TcFilter{
+			Description: description,
+			UserIp:      user.ClientLocalAddress,
+			Class:       class.Class,
+		}
+		filters = append(filters, filter)
+		filter.add(filters)
 	}
-	filters = append(filters, filter)
-	filter.add(filters)
 }
 
 /*
