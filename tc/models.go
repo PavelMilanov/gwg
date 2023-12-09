@@ -114,11 +114,17 @@ func (tc *TcConfig) generate() {
 Генерирует файл службы tc и запускает ее.
 */
 func (tc *TcConfig) createService() {
-	filename := fmt.Sprintf("/etc/systemd/system/%s", paths.TC_SERVICE_FILE)
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_SERVICE_FILE)
 	err := os.WriteFile(filename, []byte(TC_SERVICE), 0751)
 	if err != nil {
 		fmt.Println(err)
 	}
+	copy := fmt.Sprintf("sudo mv %s /etc/systemd/system/", filename)
+	cmd0 := exec.Command("bash", "-c", copy)
+	cmd0.Stdout = os.Stdout
+	cmd0.Stdin = os.Stdin
+	cmd0.Stderr = os.Stderr
+	cmd0.Run()
 	enable := fmt.Sprintf("sudo systemctl enable tc.service")
 	cmd := exec.Command("bash", "-c", enable)
 	cmd.Stdout = os.Stdout
