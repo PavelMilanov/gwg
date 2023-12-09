@@ -55,8 +55,8 @@ func main() {
 						switch os.Args[3] {
 						case "up":
 							bw := flag.NewFlagSet("up", flag.ExitOnError)
-							minSpeed := bw.String("m", "50Mbit", "минимальная скорость")
-							FullSpeed := bw.String("f", "950Mbit", "максимальная скорость")
+							minSpeed := bw.String("m", "", "минимальная скорость")
+							FullSpeed := bw.String("f", "", "максимальная скорость")
 							bw.Parse(os.Args[4:])
 							tc.UpService(*minSpeed, *FullSpeed)
 						case "down":
@@ -67,7 +67,7 @@ func main() {
 							tc.ShowService()
 						}
 					} else {
-						fmt.Print(tc.TC_DEFAULT_MENU)
+						fmt.Print(tc.TC_SERVICE_DEFAULT_MENU)
 					}
 				case "bw":
 					if len(os.Args) > 3 {

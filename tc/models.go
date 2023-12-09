@@ -168,5 +168,4 @@ func (tc *TcConfig) down() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	fmt.Println("Gwg tc removed")
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 
 	"github.com/PavelMilanov/go-wg-manager/paths"
@@ -14,6 +15,16 @@ import (
 Включение модуля gwg tc.
 */
 func UpService(minSpeed string, fullSpeed string) {
+	if minSpeed == "" || fullSpeed == "" {
+		fmt.Println("Speed rate is required. Try gwg tc service up -h")
+		os.Exit(1)
+	}
+	command := fmt.Sprintf("sudo systemctl status %s", paths.TC_SERVICE_FILE)
+	out, _ := exec.Command("bash", "-c", command).Output()
+	if string(out) == "enabled" {
+		fmt.Println("Service already enabled")
+		os.Exit(1)
+	}
 	classes := readClassFile()
 	filters := readFilterFile()
 	tc := TcConfig{
@@ -25,6 +36,7 @@ func UpService(minSpeed string, fullSpeed string) {
 	tc.generate()
 	tc.createService()
 	tc.start()
+	fmt.Println("Gwg tc service started")
 }
 
 /*
@@ -34,7 +46,7 @@ func DownService() {
 	tc := readTcFile()
 	tc.removeSerice()
 	tc.down()
-
+	fmt.Println("Gwg tc service down")
 }
 
 /*
@@ -50,11 +62,15 @@ func RestartService() {
 	tc.generate()
 	tc.down()
 	tc.start()
-
+	fmt.Println("Gwg tc service restarted")
 }
 
+/*
+Выводит форматированный вывод json-файла tc.
+*/
 func ShowService() {
-
+	tc := readTcFile()
+	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tClasses: %s\n\tFilters: %s", tc.FullSpeed, tc.Classes, tc.Filters)
 }
 
 /*
