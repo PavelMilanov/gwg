@@ -55,10 +55,9 @@ func main() {
 						switch os.Args[3] {
 						case "up":
 							bw := flag.NewFlagSet("up", flag.ExitOnError)
-							minSpeed := bw.String("m", "", "минимальная скорость")
-							FullSpeed := bw.String("f", "", "максимальная скорость")
+							FullSpeed := bw.String("rate", "", "максимальная скорость")
 							bw.Parse(os.Args[4:])
-							tc.UpService(*minSpeed, *FullSpeed)
+							tc.UpService(*FullSpeed)
 						case "down":
 							tc.DownService()
 						case "restart":

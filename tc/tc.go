@@ -14,8 +14,8 @@ import (
 /*
 Включение модуля gwg tc.
 */
-func UpService(minSpeed string, fullSpeed string) {
-	if minSpeed == "" || fullSpeed == "" {
+func UpService(fullSpeed string) {
+	if fullSpeed == "" {
 		fmt.Println("Speed rate is required. Try gwg tc service up -h")
 		os.Exit(1)
 	}
