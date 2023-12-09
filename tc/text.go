@@ -54,7 +54,7 @@ sudo tc filter add dev wg0 protocol ip parent 1:0 u32 match ip dst {{ .UserIp}} 
 
 const TC_SERVICE = `[Unit]
 Description=Trafic Controller
-After=network.target 
+After=wg-quick@wg0.service 
 
 [Service]
 Type=simple

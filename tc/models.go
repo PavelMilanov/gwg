@@ -131,12 +131,6 @@ func (tc *TcConfig) createService() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	start := fmt.Sprintf("sudo systemctl start tc.service")
-	cmd1 := exec.Command("bash", "-c", start)
-	cmd1.Stdout = os.Stdout
-	cmd1.Stdin = os.Stdin
-	cmd1.Stderr = os.Stderr
-	cmd.Run()
 }
 
 /*
@@ -161,7 +155,6 @@ func (tc *TcConfig) start() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	// fmt.Println("Gwg tc service started")
 }
 
 /*
