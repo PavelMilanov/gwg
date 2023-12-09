@@ -19,7 +19,7 @@ func UpService(minSpeed string, fullSpeed string) {
 		fmt.Println("Speed rate is required. Try gwg tc service up -h")
 		os.Exit(1)
 	}
-	command := fmt.Sprintf("sudo systemctl status %s", paths.TC_SERVICE_FILE)
+	command := fmt.Sprintf("sudo systemctl is-enabled %s", paths.TC_SERVICE_FILE)
 	out, _ := exec.Command("bash", "-c", command).Output()
 	if string(out) == "enabled" {
 		fmt.Println("Service already enabled")
@@ -70,7 +70,7 @@ func RestartService() {
 */
 func ShowService() {
 	tc := readTcFile()
-	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tClasses: %s\n\tFilters: %s", tc.FullSpeed, tc.Classes, tc.Filters)
+	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Classes, tc.Filters)
 }
 
 /*
