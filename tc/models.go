@@ -82,7 +82,7 @@ func (filter *TcFilter) remove(filters []TcFilter) {
 }
 
 /*
-Генерирует файл конфигурации tc.
+Генерирует json файл конфигурации tc.
 */
 func (tc *TcConfig) config() {
 	file, _ := json.MarshalIndent(tc, "", "\t")
@@ -94,10 +94,13 @@ func (tc *TcConfig) config() {
 	fmt.Println("Tc config file generated successfully")
 }
 
+/*
+Генерирует исполняемый файл конфигурации tc.
+*/
 func (tc *TcConfig) generate() {
 	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
 	templ, err := template.New("tc").Parse(TC_TEMPLATE)
-	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
+	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0751)
 	err = templ.Execute(file, tc)
 	if err != nil {
 		fmt.Println("Eror creating tc config file")
@@ -107,11 +110,21 @@ func (tc *TcConfig) generate() {
 	fmt.Println("Tc executable file generated successfully")
 }
 
+/*
+Генерирует файл службы tc и запускает ее.
+*/
 func (tc *TcConfig) createService() {
-	err := os.WriteFile("/etc/systemd/system/tc.service", []byte(TC_SERVICE), 0751)
+	filename := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_SERVICE_FILE)
+	err := os.WriteFile(filename, []byte(TC_SERVICE), 0751)
 	if err != nil {
 		fmt.Println(err)
 	}
+	copy := fmt.Sprintf("sudo mv %s /etc/systemd/system/", filename)
+	cmd0 := exec.Command("bash", "-c", copy)
+	cmd0.Stdout = os.Stdout
+	cmd0.Stdin = os.Stdin
+	cmd0.Stderr = os.Stderr
+	cmd0.Run()
 	enable := fmt.Sprintf("sudo systemctl enable tc.service")
 	cmd := exec.Command("bash", "-c", enable)
 	cmd.Stdout = os.Stdout
@@ -120,6 +133,21 @@ func (tc *TcConfig) createService() {
 	cmd.Run()
 }
 
+/*
+Удаление службы tc.
+*/
+func (tc *TcConfig) removeSerice() {
+	stop := fmt.Sprintf("sudo systemctl disable %s", paths.TC_SERVICE_FILE)
+	cmd := exec.Command("bash", "-c", stop)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+}
+
+/*
+Запуск исполняемого файла службы gwg tc.
+*/
 func (tc *TcConfig) start() {
 	command := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
 	cmd := exec.Command("bash", "-c", command)
@@ -127,5 +155,17 @@ func (tc *TcConfig) start() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	fmt.Println("Gwg tc service started")
+	// fmt.Println("Gwg tc service started")
+}
+
+/*
+Удаляет все правила tc.
+*/
+func (tc *TcConfig) down() {
+	command := fmt.Sprintf("sudo tc qdisc del dev wg0 root")
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }

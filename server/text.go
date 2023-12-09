@@ -28,14 +28,15 @@ PersistentKeepalive = 20
 
 const MENU = `Описание: gwg - cli-менеджер wireguard:
 
-    gwg show    - просмотр состояния wireguard-сервера.
-    gwg stat	- просмотр подробной статистики wireguard-сервера. 
-    gwg add     - добавления пользователя.
-    gwg remove	- удаление пользователя.
-    gwg block	- блокировка пользователя.
-    gwg unblock - разблокировка пользователя.
-    gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
+gwg show    - просмотр состояния wireguard-сервера.
+gwg stat    - просмотр подробной статистики wireguard-сервера. 
+gwg add     - добавления пользователя.
+gwg remove  - удаление пользователя.
+gwg block   - блокировка пользователя.
+gwg unblock - разблокировка пользователя.
+gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
 
+Помощь: gwg <command> -h
 `
 
 const GWG_UTILS = `#!/usr/bin/bash

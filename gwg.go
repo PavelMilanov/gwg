@@ -55,24 +55,26 @@ func main() {
 						switch os.Args[3] {
 						case "up":
 							bw := flag.NewFlagSet("up", flag.ExitOnError)
-							minSpeed := bw.String("m", "50Mbit", "минимальная скорость")
-							FullSpeed := bw.String("f", "950Mbit", "максимальная скорость")
+							minSpeed := bw.String("m", "", "минимальная скорость")
+							FullSpeed := bw.String("f", "", "максимальная скорость")
 							bw.Parse(os.Args[4:])
 							tc.UpService(*minSpeed, *FullSpeed)
 						case "down":
 							tc.DownService()
+						case "restart":
+							tc.RestartService()
 						case "show":
 							tc.ShowService()
 						}
 					} else {
-						fmt.Print(tc.TC_DEFAULT_MENU)
+						fmt.Print(tc.TC_SERVICE_DEFAULT_MENU)
 					}
 				case "bw":
 					if len(os.Args) > 3 {
 						switch os.Args[3] {
 						case "add":
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
-							description := bw.String("d", "", "описание")
+							description := bw.String("d", "default", "описание")
 							min := bw.String("m", "50Mbit", "минимальная скорость")
 							ceil := bw.String("c", "950Mbit", "допустимая скорость")
 							bw.Parse(os.Args[4:])
@@ -97,7 +99,7 @@ func main() {
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
 							description := bw.String("d", "", "описание")
 							user := bw.String("u", "", "имя пользователя")
-							class := bw.String("c", "1", "полоса пропускания")
+							class := bw.String("c", "1", "класс")
 							bw.Parse(os.Args[4:])
 							tc.AddFilter(*description, *user, *class)
 						case "remove":

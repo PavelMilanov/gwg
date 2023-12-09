@@ -10,4 +10,5 @@ const (
 	TC_FILTER_FILE   = "filters"
 	TC_FILE          = "tc"
 	TC_CONFIG_FILE   = "tc.sh"
+	TC_SERVICE_FILE  = "tc.service"
 )

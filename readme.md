@@ -1,4 +1,4 @@
-# go-wg-manager - менеджер Wireguard Server
+# gwg - менеджер Wireguard Server
 
 ---
 
@@ -12,7 +12,8 @@
 3) Автоматическое изменение конфигурации сервера при удалении пользователя;
 4) Автоматическое изменение конфигурации сервера при блокировке/разблокировке пользователя;
 5) Просмотр состояния сервера через стандартную утилиту wg show;
-6) Просмотр подробной статистики на основе стандартной утилиты wg show dump.
+6) Просмотр подробной статистики на основе стандартной утилиты wg show dump;
+7) Управление входящим трафиком на основе заданных правил.
 
 ## Поддерживаемые платформы
 
@@ -23,19 +24,13 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/gwg/releases) версией и поддерживаемой архитектурой:
 
 ```bash
-wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.5.1/gwg.linux_amd64.tar
+wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6/gwg.linux_amd64.tar
 ```
 
 - Распаковать архив:
 
 ```bash
-tar -xvf gwg.linux_amd64.tar
-```
-
-- Перенести исполняемый файл в директорию /usr/bin:
-
-```bash
-sudo cp gwg /usr/bin/
+tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
 ```
 
 - Запустить установку:
@@ -46,7 +41,11 @@ sudo cp gwg /usr/bin/
 
 ## Обновление
 
-- В разработке
+- Распаковать архив:
+
+```bash
+rm /usr/bin/gwg && tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
+```
 
 ## Использование
 
