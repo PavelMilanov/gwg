@@ -100,7 +100,7 @@ func (tc *TcConfig) config() {
 func (tc *TcConfig) generate() {
 	tcFile := fmt.Sprintf("%s/%s", paths.TC_DIR, paths.TC_CONFIG_FILE)
 	templ, err := template.New("tc").Parse(TC_TEMPLATE)
-	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0660)
+	file, err := os.OpenFile(tcFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0751)
 	err = templ.Execute(file, tc)
 	if err != nil {
 		fmt.Println("Eror creating tc config file")
