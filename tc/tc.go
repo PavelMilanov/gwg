@@ -14,10 +14,13 @@ import (
 /*
 Включение модуля gwg tc.
 */
-func UpService(fullSpeed string) {
+func UpService(speed string, fullSpeed string) {
 	if fullSpeed == "" {
-		fmt.Println("Speed rate is required. Try gwg tc service up -h")
+		fmt.Println("Max Speed rate is required. Try gwg tc service up -h")
 		os.Exit(1)
+	}
+	if speed == "" {
+		speed = fullSpeed
 	}
 	command := fmt.Sprintf("sudo systemctl is-enabled %s", paths.TC_SERVICE_FILE)
 	out, _ := exec.Command("bash", "-c", command).Output()
@@ -28,6 +31,7 @@ func UpService(fullSpeed string) {
 	classes := readClassFile()
 	filters := readFilterFile()
 	tc := TcConfig{
+		Speed:     speed,
 		FullSpeed: fullSpeed,
 		Classes:   classes,
 		Filters:   filters,
@@ -134,36 +138,24 @@ func AddFilter(description string, userName string, classId string) {
 		fmt.Println("Class not found. Try gwg show tc bw show")
 		os.Exit(1)
 	}
-	if userName == "all" {
-		user := "10.0.0.0/24"
-		filter := TcFilter{
-			Description: description,
-			UserIp:      user,
-			Class:       class.Class,
+	users := server.ReadClientConfigFiles()
+	user := server.UserConfig{}
+	for _, item := range users {
+		if item.Name == userName {
+			user = item
 		}
-		filters = append(filters, filter)
-		filter.add(filters)
-
-	} else {
-		users := server.ReadClientConfigFiles()
-		user := server.UserConfig{}
-		for _, item := range users {
-			if item.Name == userName {
-				user = item
-			}
-		}
-		if (server.UserConfig{}) == user {
-			fmt.Println("User not found. Try gwg stat")
-			os.Exit(1)
-		}
-		filter := TcFilter{
-			Description: description,
-			UserIp:      user.ClientLocalAddress,
-			Class:       class.Class,
-		}
-		filters = append(filters, filter)
-		filter.add(filters)
 	}
+	if (server.UserConfig{}) == user {
+		fmt.Println("User not found. Try gwg stat")
+		os.Exit(1)
+	}
+	filter := TcFilter{
+		Description: description,
+		UserIp:      user.ClientLocalAddress,
+		Class:       class.Class,
+	}
+	filters = append(filters, filter)
+	filter.add(filters)
 }
 
 /*

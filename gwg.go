@@ -55,9 +55,10 @@ func main() {
 						switch os.Args[3] {
 						case "up":
 							bw := flag.NewFlagSet("up", flag.ExitOnError)
-							FullSpeed := bw.String("rate", "", "максимальная скорость")
+							Speed := bw.String("s", "", "скорость")
+							FullSpeed := bw.String("ms", "", "максимальная скорость. Обязательный.")
 							bw.Parse(os.Args[4:])
-							tc.UpService(*FullSpeed)
+							tc.UpService(*Speed, *FullSpeed)
 						case "down":
 							tc.DownService()
 						case "restart":
@@ -97,7 +98,7 @@ func main() {
 						case "add":
 							bw := flag.NewFlagSet("add", flag.ExitOnError)
 							description := bw.String("d", "", "описание")
-							user := bw.String("u", "all", "имя пользователя")
+							user := bw.String("u", "", "имя пользователя")
 							class := bw.String("c", "1", "класс")
 							bw.Parse(os.Args[4:])
 							tc.AddFilter(*description, *user, *class)
