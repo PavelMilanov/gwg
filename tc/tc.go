@@ -74,7 +74,7 @@ func RestartService() {
 */
 func ShowService() {
 	tc := readTcFile()
-	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Classes, tc.Filters)
+	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Speed, tc.Classes, tc.Filters)
 }
 
 /*
