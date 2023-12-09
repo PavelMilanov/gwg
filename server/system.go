@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,13 +7,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-)
-
-const (
-	SERVER_DIR       = "/etc/wireguard/"
-	WG_MANAGER_DIR   = SERVER_DIR + ".wg_manager"
-	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
-	USERS_DIR        = SERVER_DIR + "users"
 )
 
 /*
@@ -31,7 +24,7 @@ func initSystem() {
 Динамическое назначение приватных ip-адресов клиентам.
 */
 func setClientIp() string {
-	configs := readClientConfigFiles()
+	configs := ReadClientConfigFiles()
 	var pattern = 2
 	var ipv4 string
 	if len(configs) == 0 {
@@ -110,7 +103,7 @@ func generateKeys() (string, string) {
 /*
 Просмотр статистики wg.
 */
-func showPeers() {
+func ShowPeers() {
 	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
 	if err != nil {
 		fmt.Println(err)

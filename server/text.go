@@ -1,4 +1,4 @@
-package main
+package server
 
 const SERVER_TEMPLATE = `[Interface]
 PrivateKey = {{ .ServerPrivateKey}}
@@ -26,13 +26,17 @@ AllowedIPs = 0.0.0.0/0
 PersistentKeepalive = 20
 `
 
-const MENU = `Меню утилиты gwg-manager:
-gwg show	- просмотр состояния wireguard-сервера.
-gwg stat	- просмотр подробной статистики wireguard-сервера. 
-gwg add		- добавления пользователя.
-gwg remove	- удаление пользователя.
-gwg block	- блокировка пользователя.
+const MENU = `Описание: gwg - cli-менеджер wireguard:
+
+gwg show    - просмотр состояния wireguard-сервера.
+gwg stat    - просмотр подробной статистики wireguard-сервера. 
+gwg add     - добавления пользователя.
+gwg remove  - удаление пользователя.
+gwg block   - блокировка пользователя.
 gwg unblock - разблокировка пользователя.
+gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
+
+Помощь: gwg <command> -h
 `
 
 const GWG_UTILS = `#!/usr/bin/bash
@@ -41,6 +45,7 @@ SERVER_DIR="/etc/wireguard/"
 WG_MANAGER_DIR="${SERVER_DIR}.wg_manager"
 USERS_CONFIG_DIR="${SERVER_DIR}.configs"
 USERS_DIR="${SERVER_DIR}users"
+TC_DIR="${SERVER_DIR}.tc"
 
 command=$1
 version=$2
@@ -64,22 +69,15 @@ function preinstallGwg {
     mkdir $WG_MANAGER_DIR
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
+    mkdir $TC_DIR
+
     echo "Installing wg server..."
     gwg install
 	gwg version
 }
 
-function updateGwg {
-    wget https://github.com/PavelMilanov/go-wg-manager/releases/download/${version}/gwg.tar
-    tar -xzf gwg.tar
-    sudo mv gwg /usr/bin
-    rm gwg.tar
-}
-
 case "$command" in
     install)
         preinstallGwg;;
-	update)
-        updateGwg;;
 esac
 `
