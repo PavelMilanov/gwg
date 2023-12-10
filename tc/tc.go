@@ -15,10 +15,6 @@ import (
 Включение модуля gwg tc.
 */
 func UpService(speed string, fullSpeed string) {
-	if fullSpeed == "" {
-		fmt.Println("Max Speed rate is required. Try gwg tc service up -h")
-		os.Exit(1)
-	}
 	if speed == "" {
 		speed = fullSpeed
 	}
@@ -35,6 +31,10 @@ func UpService(speed string, fullSpeed string) {
 		FullSpeed: fullSpeed,
 		Classes:   classes,
 		Filters:   filters,
+	}
+	if tc.FullSpeed == "" {
+		fmt.Println("Full Speed is required. Try gwg tc service up -d -c <value> -ms <value>")
+		os.Exit(1)
 	}
 	tc.config()
 	tc.generate()

@@ -56,7 +56,7 @@ func main() {
 						case "up":
 							bw := flag.NewFlagSet("up", flag.ExitOnError)
 							Speed := bw.String("s", "", "скорость")
-							FullSpeed := bw.String("ms", "", "максимальная скорость. Обязательный.")
+							FullSpeed := bw.String("ms", "", "максимальная скорость")
 							bw.Parse(os.Args[4:])
 							tc.UpService(*Speed, *FullSpeed)
 						case "down":
