@@ -323,8 +323,8 @@ filter: demo
 	class: 2;
 
 filter: demo2
-		user: 10.0.0.2/32;
-		class: 2;
+	user: 10.0.0.2/32;
+	class: 2;
 ```
 
 #### Удаление фильтра
