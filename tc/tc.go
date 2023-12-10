@@ -14,10 +14,9 @@ import (
 /*
 Включение модуля gwg tc.
 */
-func UpService(minSpeed string, fullSpeed string) {
-	if minSpeed == "" || fullSpeed == "" {
-		fmt.Println("Speed rate is required. Try gwg tc service up -h")
-		os.Exit(1)
+func UpService(speed string, fullSpeed string) {
+	if speed == "" {
+		speed = fullSpeed
 	}
 	command := fmt.Sprintf("sudo systemctl is-enabled %s", paths.TC_SERVICE_FILE)
 	out, _ := exec.Command("bash", "-c", command).Output()
@@ -28,9 +27,14 @@ func UpService(minSpeed string, fullSpeed string) {
 	classes := readClassFile()
 	filters := readFilterFile()
 	tc := TcConfig{
+		Speed:     speed,
 		FullSpeed: fullSpeed,
 		Classes:   classes,
 		Filters:   filters,
+	}
+	if tc.FullSpeed == "" {
+		fmt.Println("Full Speed is required. Try gwg tc service up -d -c <value> -ms <value>")
+		os.Exit(1)
 	}
 	tc.config()
 	tc.generate()
@@ -70,7 +74,7 @@ func RestartService() {
 */
 func ShowService() {
 	tc := readTcFile()
-	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Classes, tc.Filters)
+	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Speed, tc.Classes, tc.Filters)
 }
 
 /*
@@ -113,7 +117,7 @@ func RemoveBandwidth(class string) {
 func ShowBandwidth() {
 	configs := readClassFile()
 	for _, config := range configs {
-		fmt.Printf("class: %s\n\tdescription: %s;\n\tmin-rate: %s;\n\tcail-rate: %s\n\n", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
+		fmt.Printf("class: %s\n\tdescription: %s;\n\tmin-rate: %s;\n\tcail-rate: %s;\n\n", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
 	}
 }
 
@@ -123,6 +127,17 @@ func ShowBandwidth() {
 func AddFilter(description string, userName string, classId string) {
 	classes := readClassFile()
 	class := TcClass{}
+	filters := readFilterFile()
+	for _, item := range classes {
+		if item.Class == classId {
+			class = item
+			break
+		}
+	}
+	if (TcClass{}) == class {
+		fmt.Println("Class not found. Try gwg show tc bw show")
+		os.Exit(1)
+	}
 	users := server.ReadClientConfigFiles()
 	user := server.UserConfig{}
 	for _, item := range users {
@@ -130,21 +145,10 @@ func AddFilter(description string, userName string, classId string) {
 			user = item
 		}
 	}
-	if (TcClass{}) == class {
-		fmt.Println("Class not found. Try gwg show tc bw show")
-		os.Exit(1)
-	}
-	for _, item := range classes {
-		if item.Class == classId {
-			class = item
-			break
-		}
-	}
 	if (server.UserConfig{}) == user {
 		fmt.Println("User not found. Try gwg stat")
 		os.Exit(1)
 	}
-	filters := readFilterFile()
 	filter := TcFilter{
 		Description: description,
 		UserIp:      user.ClientLocalAddress,
@@ -177,7 +181,7 @@ func RemoveFilter(filterDesc string) {
 func ShowFilter() {
 	filters := readFilterFile()
 	for _, filter := range filters {
-		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n", filter.Description, filter.UserIp, filter.Class)
+		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n\n", filter.Description, filter.UserIp, filter.Class)
 	}
 }
 

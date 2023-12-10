@@ -11,6 +11,7 @@ import (
 )
 
 type TcConfig struct {
+	Speed     string
 	FullSpeed string
 	Classes   []TcClass
 	Filters   []TcFilter
@@ -155,7 +156,6 @@ func (tc *TcConfig) start() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	// fmt.Println("Gwg tc service started")
 }
 
 /*
