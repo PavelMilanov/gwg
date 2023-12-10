@@ -117,7 +117,7 @@ func RemoveBandwidth(class string) {
 func ShowBandwidth() {
 	configs := readClassFile()
 	for _, config := range configs {
-		fmt.Printf("class: %s\n\tdescription: %s;\n\tmin-rate: %s;\n\tcail-rate: %s\n\n", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
+		fmt.Printf("class: %s\n\tdescription: %s;\n\tmin-rate: %s;\n\tcail-rate: %s;\n\n", config.Class, config.Description, config.MinSpeed, config.CeilSpeed)
 	}
 }
 
@@ -181,7 +181,7 @@ func RemoveFilter(filterDesc string) {
 func ShowFilter() {
 	filters := readFilterFile()
 	for _, filter := range filters {
-		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n", filter.Description, filter.UserIp, filter.Class)
+		fmt.Printf("filter: %s\n\tuser: %s;\n\tclass: %s;\n\n", filter.Description, filter.UserIp, filter.Class)
 	}
 }
 
