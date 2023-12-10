@@ -241,7 +241,7 @@ Gwg tc service:
 
 ### tc bw
 
-`gwg tc bw` - абстракция над `tc class`, позволяющая создать полосы пропускания
+`gwg tc bw` - абстракция над `tc class`, позволяющая создавать полосы пропускания
 
 ```bash
 gwg tc bw -h
@@ -307,8 +307,8 @@ Removed successfully
 ```bash
 gwg tc ft add -d demo -c 2 -u test
 filter: demo
-		user: 10.0.0.2/32;
-		class: 2;
+	user: 10.0.0.2/32;
+	class: 2;
 Added successfully
 ```
 
@@ -319,8 +319,8 @@ Added successfully
 ```bash
 gwg tc ft show
 filter: demo
-		user: 10.0.0.2/32;
-		class: 2;
+	user: 10.0.0.2/32;
+	class: 2;
 
 filter: demo2
 		user: 10.0.0.2/32;
@@ -334,8 +334,8 @@ filter: demo2
 ```bash
 gwg tc ft remove -id demo2
 filter: demo2
-		user: 10.0.0.2/32;
-		class: 2;
+	user: 10.0.0.2/32;
+	class: 2;
 Removed successfully
 ```
 
