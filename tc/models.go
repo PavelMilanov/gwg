@@ -11,6 +11,7 @@ import (
 )
 
 type TcConfig struct {
+	Intf      string
 	Speed     string
 	FullSpeed string
 	Classes   []TcClass

@@ -26,7 +26,9 @@ func UpService(speed string, fullSpeed string) {
 	}
 	classes := readClassFile()
 	filters := readFilterFile()
+	server := server.ReadServerConfigFile()
 	tc := TcConfig{
+		Intf:      server.Alias,
 		Speed:     speed,
 		FullSpeed: fullSpeed,
 		Classes:   classes,

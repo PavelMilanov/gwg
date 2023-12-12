@@ -28,10 +28,17 @@ func setClientIp() string {
 	var pattern = 2
 	var ipv4 string
 	if len(configs) == 0 {
-		ipv4 = "10.0.0.2/32"
+		server := ReadServerConfigFile()
+		serverIPv4 := server.LocalAddress[:len(server.LocalAddress)-3] // 10.0.0.1 -=> 10.0.0.1/32
+		clientIPv4 := strings.Split(serverIPv4, ".")
+		IPv4byte1, _ := strconv.Atoi(clientIPv4[0])
+		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
+		IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
+		IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
+		ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, IPv4byte4+1) // 10.0.0.1 => 10.0.0.2/32
 	}
 	for index, config := range configs {
-		data := config.ClientLocalAddress[:len(config.ClientLocalAddress)-3] // 10.0.0.5 10.0.0.5/32
+		data := config.ClientLocalAddress[:len(config.ClientLocalAddress)-3] // 10.0.0.5 => 10.0.0.5/32
 		clientIPv4 := strings.Split(data, ".")
 		IPv4byte1, _ := strconv.Atoi(clientIPv4[0])
 		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
@@ -104,7 +111,9 @@ func generateKeys() (string, string) {
 Просмотр статистики wg.
 */
 func ShowPeers() {
-	out, err := exec.Command("bash", "-c", "sudo wg show").Output()
+	server := ReadServerConfigFile()
+	command := fmt.Sprintf("sudo %s show", server.Alias)
+	out, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -115,7 +124,7 @@ func ShowPeers() {
 Управление службой wg-quick.
 */
 func commandServer(cmd string) {
-	server := readServerConfigFile()
+	server := ReadServerConfigFile()
 	command := fmt.Sprintf("sudo systemctl %s wg-quick@%s.service", cmd, server.Alias)
 	_, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
