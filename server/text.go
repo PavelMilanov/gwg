@@ -39,8 +39,7 @@ gwg tc      - модуль управления трафиком. (По-умол
 Помощь: gwg <command> -h
 `
 
-const GWG_UTILS = `#!/usr/bin/bash
-
+const GWG_UTILS = `
 SERVER_DIR="/etc/wireguard/"
 WG_MANAGER_DIR="${SERVER_DIR}.wg_manager"
 USERS_CONFIG_DIR="${SERVER_DIR}.configs"

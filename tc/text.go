@@ -40,8 +40,7 @@ gwg tc ft show   - просмотр существующих правил gwg tr
 
 `
 
-const TC_TEMPLATE = `#!/usr/bin/bash
-
+const TC_TEMPLATE = `
 sudo tc qdisc add dev wg0 root handle 1: htb default 1
 sudo tc class add dev wg0 parent 1: classid 1:1 htb rate {{ .Speed}} ceil {{ .FullSpeed}} burst 15k
 {{ range .Classes}}
