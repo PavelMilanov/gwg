@@ -49,6 +49,8 @@ TC_DIR="${SERVER_DIR}.tc"
 command=$1
 version=$2
 
+sudo mv gwg /usr/bin/gwg
+
 function preinstallGwg {
     echo "Installing Wireguard Server..."
     sudo apt install -y wireguard iptables
@@ -69,7 +71,8 @@ function preinstallGwg {
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
     mkdir $TC_DIR
-
+    sudo cp gwg /usr/bin/gwg
+    
     echo "Installing wg server..."
     gwg install
 	gwg version
