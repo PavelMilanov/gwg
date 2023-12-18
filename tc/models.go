@@ -11,6 +11,7 @@ import (
 )
 
 type TcConfig struct {
+	Intf      string
 	Speed     string
 	FullSpeed string
 	Classes   []TcClass
@@ -144,6 +145,8 @@ func (tc *TcConfig) removeSerice() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Run()
+	filename := fmt.Sprintf("/etc/systemd/system/%s", paths.TC_SERVICE_FILE)
+	os.Remove(filename)
 }
 
 /*

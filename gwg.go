@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/PavelMilanov/go-wg-manager/server"
+	"github.com/PavelMilanov/go-wg-manager/ssp"
 	"github.com/PavelMilanov/go-wg-manager/tc"
 )
 
@@ -46,7 +47,7 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			server.ChangeStatusUser(*alias, "unblock")
 		case "version":
-			fmt.Println("gwg version: 0.2.6")
+			fmt.Println("gwg version: 0.2.6.1")
 		case "tc":
 			if len(os.Args) > 2 {
 				switch os.Args[2] {
@@ -120,6 +121,31 @@ func main() {
 				}
 			} else {
 				fmt.Print(tc.TC_DEFAULT_MENU)
+			}
+		case "ssp":
+			if len(os.Args) > 2 {
+				switch os.Args[2] {
+				case "start":
+					if len(os.Args) > 3 {
+						st := flag.NewFlagSet("start", flag.ExitOnError)
+						intf := st.String("i", "", "внешний интерфейс")
+						ip := st.String("ip", "", "ip-адресс ss-сервера")
+						port := st.Int("p", 0, "порт ss-сервера")
+						pwd := st.String("pwd", "", "пароль ss-сервера")
+						st.Parse(os.Args[3:])
+						ssp.Start(*intf, *ip, *port, *pwd)
+					} else {
+						fmt.Print(ssp.SSP_START_MENU)
+					}
+				case "stop":
+					ssp.Stop()
+				case "show":
+					ssp.Show()
+				default:
+					fmt.Print(ssp.SSP_DEFAULT_MENU)
+				}
+			} else {
+				fmt.Print(ssp.SSP_DEFAULT_MENU)
 			}
 		default:
 			fmt.Print(server.MENU)

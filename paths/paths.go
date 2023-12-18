@@ -6,9 +6,13 @@ const (
 	USERS_CONFIG_DIR = SERVER_DIR + ".configs"
 	USERS_DIR        = SERVER_DIR + "users"
 	TC_DIR           = SERVER_DIR + ".tc"
+	SSP_DIR          = SERVER_DIR + ".ssp"
 	TC_CLASS_FILE    = "classes"
 	TC_FILTER_FILE   = "filters"
 	TC_FILE          = "tc"
 	TC_CONFIG_FILE   = "tc.sh"
 	TC_SERVICE_FILE  = "tc.service"
+	SSP_FILE         = "ssp"
+	SSP_CONFIG_FILE  = "ssp.sh"
+	SSP_SERVICE_FILE = "ssp.service"
 )
