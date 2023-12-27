@@ -48,7 +48,7 @@ func writeClientConfig(config UserConfig, filename string) {
 /*
 Чтение конфигурациионного файла сервера.
 */
-func readServerConfigFile() WgServerConfig {
+func ReadServerConfigFile() WgServerConfig {
 	files, _ := os.ReadDir(paths.WG_MANAGER_DIR)
 	config := WgServerConfig{}
 	for _, file := range files {
@@ -85,7 +85,7 @@ func ReadClientConfigFiles() []UserConfig {
 func AddUSer(alias string) {
 	clientPrivKey, clientPubKey := generateKeys()
 	clientip := setClientIp()
-	server := readServerConfigFile()
+	server := ReadServerConfigFile()
 	config := UserConfig{
 		ClientPrivateKey:   clientPrivKey,
 		ClientPublicKey:    clientPubKey,
@@ -109,7 +109,7 @@ func AddUSer(alias string) {
 Блокировка/разблокировка пользователя.
 */
 func ChangeStatusUser(alias string, state string) {
-	server := readServerConfigFile()
+	server := ReadServerConfigFile()
 	jsonfile := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, alias)
 	config := UserConfig{}
 	content, err := os.ReadFile(jsonfile)
@@ -138,7 +138,7 @@ func ChangeStatusUser(alias string, state string) {
 Удаление пользователя.
 */
 func RemoveUser(alias string) {
-	server := readServerConfigFile()
+	server := ReadServerConfigFile()
 	configfile := fmt.Sprintf("%s/%s.conf", paths.USERS_DIR, alias)
 	jsonfile := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, alias)
 	configs := []string{configfile, jsonfile}

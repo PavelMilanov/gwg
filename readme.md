@@ -25,19 +25,19 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/gwg/releases) версией и поддерживаемой архитектурой:
 
 ```bash
-wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6/gwg.linux_amd64.tar
+wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6.1/gwg.linux_amd64.tar
 ```
 
 - Распаковать архив:
 
 ```bash
-tar -xvf gwg.linux_amd64.tar
+tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
 ```
 
 - Запустить установку:
 
 ```bash
-./gwg init
+/usr/bin/gwg init
 ```
 
 ## Обновление
@@ -65,6 +65,7 @@ gwg remove  - удаление пользователя.
 gwg block   - блокировка пользователя.
 gwg unblock - разблокировка пользователя.
 gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
+gwg ssp     - режим прокси-сервера. (По-умолчанию выключен).
 
 Помощь: gwg <command> -h
 ```

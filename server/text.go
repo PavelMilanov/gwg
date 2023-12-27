@@ -35,6 +35,7 @@ gwg remove  - удаление пользователя.
 gwg block   - блокировка пользователя.
 gwg unblock - разблокировка пользователя.
 gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
+gwg ssp     - режим прокси-сервера. (По-умолчанию выключен).
 
 Помощь: gwg <command> -h
 `
@@ -48,8 +49,6 @@ TC_DIR="${SERVER_DIR}.tc"
 
 command=$1
 version=$2
-
-sudo mv gwg /usr/bin/gwg
 
 function preinstallGwg {
     echo "Installing Wireguard Server..."

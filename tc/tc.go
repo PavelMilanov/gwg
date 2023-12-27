@@ -26,7 +26,9 @@ func UpService(speed string, fullSpeed string) {
 	}
 	classes := readClassFile()
 	filters := readFilterFile()
+	server := server.ReadServerConfigFile()
 	tc := TcConfig{
+		Intf:      server.Alias,
 		Speed:     speed,
 		FullSpeed: fullSpeed,
 		Classes:   classes,
@@ -73,6 +75,12 @@ func RestartService() {
 Выводит форматированный вывод json-файла tc.
 */
 func ShowService() {
+	command := fmt.Sprintf("sudo systemctl is-enabled %s", paths.TC_SERVICE_FILE)
+	out, _ := exec.Command("bash", "-c", command).Output()
+	if string(out) != "enabled" {
+		fmt.Println("Service not enabled")
+		os.Exit(1)
+	}
 	tc := readTcFile()
 	fmt.Printf("Gwg tc service:\n\tFullSpeed: %s\n\tSpeed: %s\n\tClasses: %s\n\tFilters: %s\n", tc.FullSpeed, tc.Speed, tc.Classes, tc.Filters)
 }
