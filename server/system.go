@@ -111,8 +111,7 @@ func generateKeys() (string, string) {
 Просмотр статистики wg.
 */
 func ShowPeers() {
-	server := ReadServerConfigFile()
-	command := fmt.Sprintf("sudo %s show", server.Alias)
+	command := fmt.Sprintf("sudo wg show")
 	out, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println(err)
