@@ -25,7 +25,7 @@ func initSystem() {
 */
 func setClientIp() string {
 	configs := ReadClientConfigFiles()
-	var pattern = 50 // выдавать адреса с 50
+	var pattern = 2 // выдавать адреса с 2
 	var ipv4 string
 	if len(configs) == 0 {
 		server := ReadServerConfigFile()
@@ -35,7 +35,7 @@ func setClientIp() string {
 		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
 		IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
 		IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
-		ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, IPv4byte4+pattern) // 10.0.0.1 => 10.0.0.51/32
+		ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, IPv4byte4+pattern) // 10.0.0.1 => 10.0.0.2/32
 	}
 	for index, config := range configs {
 		data := config.ClientLocalAddress[:len(config.ClientLocalAddress)-3] // 10.0.0.5 => 10.0.0.5/32
