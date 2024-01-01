@@ -51,7 +51,7 @@ version=$2
 
 function preinstallGwg {
     echo "Installing Wireguard Server..."
-    sudo apt install -y wireguard iptables
+    sudo apt install -y wireguard iptables sudo
 
     echo "Preparing system..."
     sudo chown root:$USER /etc/wireguard
@@ -69,7 +69,6 @@ function preinstallGwg {
     mkdir $USERS_CONFIG_DIR
     mkdir $USERS_DIR
     mkdir $TC_DIR
-    sudo cp gwg /usr/bin/gwg
     
     echo "Installing wg server..."
     gwg install
