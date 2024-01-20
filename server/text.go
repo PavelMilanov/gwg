@@ -4,8 +4,8 @@ const SERVER_TEMPLATE = `[Interface]
 PrivateKey = {{ .ServerPrivateKey}}
 Address = {{ .LocalAddress}}
 ListenPort = {{ .ListenPort}}
-PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ .Eth}} -j MASQUERADE
-PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ .Eth}} -j MASQUERADE
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ .Eth}} -j MASQUERADE; sudo ip rule add from {{ .PublicAddress}} table main;
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ .Eth}} -j MASQUERADE; sudo ip rule del from {{ .PublicAddress}} table main;
 {{ range .Users}}
 {{ if .Status}}[Peer]{{else}}# [Peer]{{end}}
 # Name = {{ .Name }}
