@@ -46,7 +46,7 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			server.ChangeStatusUser(*alias, "unblock")
 		case "version":
-			fmt.Println("gwg version: 0.2.6.1")
+			fmt.Println("gwg version: 0.2.6.2")
 		case "tc":
 			if len(os.Args) > 2 {
 				switch os.Args[2] {
