@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,34 +26,26 @@ func initSystem() {
 */
 func setClientIp() string {
 	configs := ReadClientConfigFiles()
-	var pattern = 2 // выдавать адреса с 2
 	var ipv4 string
+	server := ReadServerConfigFile()
+	serverIPv4 := server.LocalAddress[:len(server.LocalAddress)-3] // 10.0.0.1 -=> 10.0.0.1/32
+	clientIPv4 := strings.Split(serverIPv4, ".")
+	IPv4byte1, _ := strconv.Atoi(clientIPv4[0])
+	IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
+	IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
 	if len(configs) == 0 {
-		server := ReadServerConfigFile()
-		serverIPv4 := server.LocalAddress[:len(server.LocalAddress)-3] // 10.0.0.1 -=> 10.0.0.1/32
-		clientIPv4 := strings.Split(serverIPv4, ".")
-		IPv4byte1, _ := strconv.Atoi(clientIPv4[0])
-		IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
-		IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
 		IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
 		ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, IPv4byte4+1) // 10.0.0.1 => 10.0.0.2/32
 	} else {
-		for index, config := range configs {
+		var pool []int
+		for _, config := range configs {
 			data := config.ClientLocalAddress[:len(config.ClientLocalAddress)-3] // 10.0.0.5 => 10.0.0.5/32
 			clientIPv4 := strings.Split(data, ".")
-			IPv4byte1, _ := strconv.Atoi(clientIPv4[0])
-			IPv4byte2, _ := strconv.Atoi(clientIPv4[1])
-			IPv4byte3, _ := strconv.Atoi(clientIPv4[2])
-			IPv4byte4, _ := strconv.Atoi(clientIPv4[3])
-			if pattern < IPv4byte4 {
-				ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern)
-				break
-			}
-			if index+1 == len(configs) {
-				ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pattern+1)
-			}
-			pattern++
+			item, _ := strconv.Atoi(clientIPv4[3])
+			pool = append(pool, item)
 		}
+		sort.Ints(pool)
+		ipv4 = fmt.Sprintf("%d.%d.%d.%d/32", IPv4byte1, IPv4byte2, IPv4byte3, pool[len(pool)-1]+1)
 	}
 	return ipv4
 }
