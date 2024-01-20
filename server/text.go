@@ -17,13 +17,13 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
 const CLIENT_TEMPLATE = `[Interface]
 PrivateKey = {{ .ClientPrivateKey}}
 Address = {{ .ClientLocalAddress}}
-DNS = 8.8.8.8
+DNS = {{ .DnsResolv}}
 
 [Peer]
 PublicKey = {{ .ServerPublicKey}}
 Endpoint = {{ .ServerIp}}:{{ .ServerPort}}
 AllowedIPs = 0.0.0.0/0
-PersistentKeepalive = 20
+PersistentKeepalive = 25
 `
 
 const MENU = `Описание: gwg - cli-менеджер wireguard:

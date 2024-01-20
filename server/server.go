@@ -190,6 +190,7 @@ func configureServer(priv string, pub string, alias string, addr string, port in
 		PublicAddress:    public_addr,
 		ListenPort:       port,
 		Eth:              intf,
+		DnsResolv:        "8.8.8.8",
 		Alias:            alias,
 	}
 	writeServerConfig(config, alias)

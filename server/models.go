@@ -19,6 +19,7 @@ type WgServerConfig struct {
 	ListenPort       int
 	Eth              string
 	Alias            string
+	DnsResolv        string
 	Users            []UserConfig // for peer
 }
 
