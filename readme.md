@@ -25,7 +25,7 @@
 - Скачать архив с [желаемой](https://github.com/PavelMilanov/gwg/releases) версией и поддерживаемой архитектурой:
 
 ```bash
-wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6.1/gwg.linux_amd64.tar
+wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6.2/gwg.linux_amd64.tar
 ```
 
 - Распаковать архив:
