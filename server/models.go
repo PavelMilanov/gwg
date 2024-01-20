@@ -45,6 +45,7 @@ type UserConfig struct {
 	ServerPublicKey    string
 	ServerIp           string
 	ServerPort         int
+	DnsResolv          string
 	Name               string
 	Status             string
 }

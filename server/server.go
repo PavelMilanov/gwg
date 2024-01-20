@@ -93,6 +93,7 @@ func AddUSer(alias string) {
 		ServerPublicKey:    server.ServerPublicKey,
 		ServerIp:           server.PublicAddress,
 		ServerPort:         server.ListenPort,
+		DnsResolv:          server.DnsResolv,
 		Name:               alias,
 		Status:             "active",
 	}
