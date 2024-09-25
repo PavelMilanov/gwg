@@ -9,6 +9,8 @@ import (
 	"github.com/PavelMilanov/go-wg-manager/tc"
 )
 
+var VERSION string
+
 func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
@@ -46,7 +48,8 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			server.ChangeStatusUser(*alias, "unblock")
 		case "version":
-			fmt.Println("gwg version: 0.2.6.2")
+			ver := fmt.Sprintf("gwg version: %s", VERSION)
+			fmt.Println(ver)
 		case "tc":
 			if len(os.Args) > 2 {
 				switch os.Args[2] {
