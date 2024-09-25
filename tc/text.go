@@ -54,7 +54,7 @@ After=wg-quick@wg0.service
 
 [Service]
 Type=simple
-ExecStart=/etc/wireguard/.tc/tc.sh
+ExecStart=sh /etc/wireguard/.tc/tc.sh
 
 [Install]
 WantedBy=multi-user.target
