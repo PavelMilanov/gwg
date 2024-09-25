@@ -1,9 +1,11 @@
 # this make only for development
-# make amd64 version=
+# make release version=
 
 version=
 
-amd64:
+release: amd arm
+
+amd:
 	@GOOS=linux GOARCH=amd64 go install -ldflags="-X 'main.VERSION=${version}'"
 	@cp /Users/pavel_milanov/go/bin/linux_amd64/go-wg-manager gwg
 	@tar --totals -cvf gwg.linux_amd64.tar gwg
