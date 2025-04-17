@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/PavelMilanov/go-wg-manager/server"
 	"github.com/PavelMilanov/go-wg-manager/tc"
@@ -48,7 +49,7 @@ func main() {
 			unblockCommand.Parse(os.Args[2:])
 			server.ChangeStatusUser(*alias, "unblock")
 		case "version":
-			ver := fmt.Sprintf("gwg version: %s", VERSION)
+			ver := fmt.Sprintf("gwg version: %s\ngo version: %s", VERSION, runtime.Version())
 			fmt.Println(ver)
 		case "tc":
 			if len(os.Args) > 2 {
