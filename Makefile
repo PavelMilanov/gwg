@@ -1,18 +1,28 @@
-# this make only for development
-# make release version=
+GO := go
+version := dev
 
-version=
+.PHONY: build test deb release amd arm clean
+
+build:
+	cd src && $(GO) build -trimpath -ldflags="-X main.VERSION=$(version)" -o ../gwg .
+
+test:
+	cd src && $(GO) test ./...
+
+deb:
+	dpkg-buildpackage -us -uc -b
 
 release: amd arm
 
 amd:
-	@GOOS=linux GOARCH=amd64 go install -trimpath -ldflags="-X 'main.VERSION=${version}'"
-	@cp /Users/pavel_milanov/go/bin/linux_amd64/go-wg-manager gwg
-	@tar --totals -cvf gwg.linux_amd64.tar gwg
-	@rm gwg
+	cd src && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -trimpath -ldflags="-s -w -X main.VERSION=$(version)" -o ../gwg .
+	tar -cf gwg.linux_amd64.tar gwg
+	$(RM) gwg
 
 arm:
-	@GOOS=linux GOARCH=arm go install -trimpath -ldflags="-X 'main.VERSION=${version}'"
-	@cp /Users/pavel_milanov/go/bin/linux_arm/go-wg-manager gwg
-	@tar --totals -cvf gwg.linux_arm.tar gwg
-	@rm gwg
+	cd src && CGO_ENABLED=0 GOOS=linux GOARCH=arm $(GO) build -trimpath -ldflags="-s -w -X main.VERSION=$(version)" -o ../gwg .
+	tar -cf gwg.linux_arm.tar gwg
+	$(RM) gwg
+
+clean:
+	$(RM) gwg gwg.linux_amd64.tar gwg.linux_arm.tar

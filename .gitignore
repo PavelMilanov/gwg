@@ -2,4 +2,10 @@ gwg
 gwg.tar.gz
 .obsidian
 .DS_Store
-setup.sh
+.vagrant
+/debian/build/
+/debian/.debhelper/
+/debian/gwg/
+/debian/files
+/debian/*.debhelper.log
+/debian/*.substvars

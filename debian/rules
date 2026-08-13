@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+export CGO_ENABLED := 0
+
+VERSION := $(shell dpkg-parsechangelog -SVersion | sed 's/-[^-]*$$//')
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	mkdir -p debian/build
+	cd src && go build -trimpath -buildmode=pie -ldflags="-X main.VERSION=$(VERSION)" -o ../debian/build/gwg .
+
+override_dh_auto_test:
+	cd src && go test ./...
+
+override_dh_dwz:
+
+override_dh_shlibdeps:

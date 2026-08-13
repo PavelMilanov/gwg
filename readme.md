@@ -22,31 +22,43 @@
 
 ## Установка
 
-- Скачать архив с [желаемой](https://github.com/PavelMilanov/gwg/releases) версией и поддерживаемой архитектурой:
+- Скачать `.deb`-пакет нужной версии и архитектуры со страницы
+  [релизов](https://github.com/PavelMilanov/gwg/releases).
 
 ```bash
-wget https://github.com/PavelMilanov/gwg/releases/download/v0.2.6.4/gwg.linux_amd64.tar
+sudo apt install ./gwg_0.2.6.4-1_amd64.deb
 ```
 
-- Распаковать архив:
+- APT установит `gwg` и необходимые зависимости: `wireguard-tools`,
+  `iproute2`, `iptables`, `procps`, `systemd` и `sudo`. Установка пакета не
+  изменяет сетевую конфигурацию и не запускает WireGuard.
+
+- Инициализировать сервер отдельной командой:
 
 ```bash
-tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
+sudo gwg init
 ```
 
-- Запустить установку:
+`gwg init` создает конфигурацию сервера `wg0`, включает IPv4 forwarding и
+запускает `wg-quick@wg0.service`.
 
-```bash
-/usr/bin/gwg init
-```
+Подробная документация по сборке и устройству пакета находится в
+[`docs/debian-package.md`](./docs/debian-package.md).
+
+Исходный Go-модуль находится в каталоге [`src`](./src). Локальная сборка и
+тестирование из корня репозитория выполняются командами `make build` и
+`make test`.
 
 ## Обновление
 
-- Распаковать архив:
+- Установить новый пакет поверх текущей версии:
 
 ```bash
-rm /usr/bin/gwg && tar -C /usr/bin/ -xvf gwg.linux_amd64.tar
+sudo apt install ./gwg_NEW_VERSION_amd64.deb
 ```
+
+Обновление бинарника не вызывает `gwg init` и не изменяет существующие ключи
+или файлы в `/etc/wireguard`.
 
 ## Базовое  использование
 

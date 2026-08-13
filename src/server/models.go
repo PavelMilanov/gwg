@@ -3,9 +3,18 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
+	"github.com/PavelMilanov/go-wg-manager/internal/atomicfile"
 	"github.com/PavelMilanov/go-wg-manager/paths"
+)
+
+var (
+	serverDir     = paths.SERVER_DIR
+	managerDir    = paths.WG_MANAGER_DIR
+	userConfigDir = paths.USERS_CONFIG_DIR
+	usersDir      = paths.USERS_DIR
+	tcConfigDir   = paths.TC_DIR
+	sysctlFile    = "/etc/sysctl.d/90-gwg.conf"
 )
 
 /*
@@ -26,13 +35,16 @@ type WgServerConfig struct {
 /*
 Генерирует вспомогательный конфигурационый файл (json) сервера для работы gwg.
 */
-func (config *WgServerConfig) createServerConfigFile() {
-	file, _ := json.MarshalIndent(config, "", "\t")
-	filename := fmt.Sprintf("%s/%s.json", paths.WG_MANAGER_DIR, config.Alias)
-	err := os.WriteFile(filename, file, 0660)
-	if err != nil {
-		fmt.Println(err)
+func (config *WgServerConfig) createServerConfigFile() error {
+	if err := validateServerConfig(*config); err != nil {
+		return err
 	}
+	data, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		return fmt.Errorf("marshal server configuration: %w", err)
+	}
+	filename := configPath(managerDir, config.Alias, ".json")
+	return atomicfile.Write(filename, data, 0600)
 }
 
 /*
@@ -53,13 +65,16 @@ type UserConfig struct {
 /*
 Генерирует вспомогательный конфигурационый файл (json) клиента для работы gwg.
 */
-func (config *UserConfig) addConfigUser(fileName string) {
-	file, _ := json.MarshalIndent(config, "", "\t")
-	filename := fmt.Sprintf("%s/%s.json", paths.USERS_CONFIG_DIR, fileName)
-	err := os.WriteFile(filename, file, 0660)
-	if err != nil {
-		fmt.Println(err)
+func (config *UserConfig) addConfigUser(fileName string) error {
+	if err := validateUserConfig(*config); err != nil {
+		return err
 	}
+	data, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		return fmt.Errorf("marshal user configuration: %w", err)
+	}
+	filename := configPath(userConfigDir, fileName, ".json")
+	return atomicfile.Write(filename, data, 0600)
 }
 
 /*
@@ -68,6 +83,6 @@ func (config *UserConfig) addConfigUser(fileName string) {
 type WireguardDump struct {
 	user   string
 	ip     string
-	rateRx int
-	rateTx int
+	rateRx uint64
+	rateTx uint64
 }

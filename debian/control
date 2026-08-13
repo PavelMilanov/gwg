@@ -1,0 +1,27 @@
+Source: gwg
+Section: net
+Priority: optional
+Maintainer: Pavel Milanov <milanov71@icloud.com>
+Build-Depends: debhelper-compat (= 13), golang-any (>= 2:1.26~)
+Standards-Version: 4.7.4
+Rules-Requires-Root: no
+Homepage: https://github.com/PavelMilanov/gwg
+Vcs-Git: https://github.com/PavelMilanov/gwg.git
+Vcs-Browser: https://github.com/PavelMilanov/gwg
+
+Package: gwg
+Architecture: any
+Depends:
+ ${misc:Depends},
+ iproute2,
+ iptables,
+ procps,
+ sudo,
+ systemd,
+ wireguard-tools
+Description: command-line manager for WireGuard servers
+ gwg initializes and administers a WireGuard server, manages peers,
+ displays transfer statistics and configures per-peer traffic limits.
+ .
+ Installing this package only installs the gwg executable and its runtime
+ dependencies. Server configuration is performed explicitly by gwg init.

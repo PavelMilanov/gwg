@@ -1,0 +1,64 @@
+.TH GWG 1 "August 2026" "gwg 0.2.6.4" "User Commands"
+.SH NAME
+gwg \- initialize and administer a WireGuard server
+.SH SYNOPSIS
+.B gwg
+.I command
+.RI [ options ]
+.SH DESCRIPTION
+.B gwg
+creates and maintains WireGuard server and peer configuration. Installing the
+Debian package does not initialize a server. Initialization is an explicit
+administrative operation.
+.SH COMMANDS
+.TP
+.B init
+Prepare system directories, enable IPv4 forwarding and initialize a default
+wg0 server. This command must be run as root.
+.TP
+.BI "install -name " interface " -network " prefix " -port " port
+Create and start a WireGuard server with explicit parameters.
+.TP
+.BI "add -name " user
+Add a peer and generate its client configuration.
+.TP
+.BI "remove -name " user
+Remove a peer.
+.TP
+.BI "block -name " user
+Disable a peer without deleting its configuration.
+.TP
+.BI "unblock -name " user
+Enable a blocked peer.
+.TP
+.B show
+Display WireGuard interface and peer state.
+.TP
+.B stat
+Display per-peer transfer counters.
+.TP
+.B tc
+Manage traffic-control classes, filters and service state.
+.TP
+.B version
+Display gwg and Go versions.
+.SH INITIALIZATION
+Install the package and its dependencies with APT, then initialize explicitly:
+.PP
+.nf
+sudo apt install ./gwg_VERSION_ARCH.deb
+sudo gwg init
+.fi
+.SH FILES
+.TP
+.I /etc/wireguard
+WireGuard and gwg configuration files.
+.TP
+.I /etc/sysctl.d/90-gwg.conf
+IPv4 forwarding setting created by
+.BR "gwg init" .
+.SH SEE ALSO
+.BR wg (8),
+.BR wg-quick (8),
+.BR tc (8),
+.BR systemctl (1)
