@@ -35,6 +35,11 @@ sudo apt install ./gwg_0.3.1-1_amd64.deb
   пользователя. Каталог `/etc/wireguard` остается доступен только `root`,
   поэтому административные команды выполняются через `sudo`.
 
+- Пакет устанавливает Bash completion в
+  `/usr/share/bash-completion/completions/gwg`. Рекомендуемый пакет
+  `bash-completion` устанавливается APT по умолчанию; после установки откройте
+  новую Bash-сессию.
+
 - Инициализировать сервер отдельной командой:
 
 ```bash
@@ -43,6 +48,10 @@ sudo gwg init
 
 `gwg init` создает конфигурацию сервера `wg0`, включает IPv4 forwarding и
 запускает `wg-quick@wg0.service`.
+
+Все команды, которые читают или изменяют `/etc/wireguard`, управляют
+WireGuard-интерфейсами либо настройками TC, запускаются через `sudo`. Без `sudo`
+доступны только справка, completion и просмотр версии.
 
 Подробная документация по сборке и устройству пакета находится в
 [`docs/debian-package.md`](./docs/debian-package.md).
@@ -118,10 +127,10 @@ Available Commands:
 
 ### Просмотр состояния подключений
 
-- Синтаксис: `gwg server show`
+- Синтаксис: `sudo gwg server show`
 
 ```bash
-gwg server show
+sudo gwg server show
 
 interface: wg0
   public key: 9zsArCzVC7kBWtvSkF4HBxSGlOvFU0StZSNvrXwVbAM=
@@ -137,19 +146,19 @@ peer: 68upH1Bn0h1xy+Nuj61qtYRBGummuGBA2cU12xxbHiw=
 
 ### Просмотр подробной статистики
 
-- Синтаксис: `gwg server stat`
+- Синтаксис: `sudo gwg server stat`
 
 ```bash
-gwg server stat
+sudo gwg server stat
 1) User: test, Ip: 10.0.0.2/32 , Resieve: 659724, Sent: 9550044
 ```
 
 ### Добавление пользователя
 
-- Синтаксис: `gwg user add <alias>`
+- Синтаксис: `sudo gwg user add <alias>`
 
 ```bash
-gwg user add test2
+sudo gwg user add test2
 ____
 [Peer]
 # Name = test
@@ -164,10 +173,10 @@ AllowedIPs = 10.0.0.3/32
 
 ### Удаление пользователя
 
-- Синтаксис: `gwg user remove <alias>`
+- Синтаксис: `sudo gwg user remove <alias>`
 
 ```bash
-gwg user remove test2
+sudo gwg user remove test2
 ___
 [Peer]
 # Name = test
@@ -177,10 +186,10 @@ AllowedIPs = 10.0.0.2/32
 
 ### Блокировка пользователя
 
-- Синтаксис: `gwg user block <alias>`
+- Синтаксис: `sudo gwg user block <alias>`
 
 ```bash
-gwg user block test
+sudo gwg user block test
 ___
 # [Peer]
 # Name = test
@@ -190,10 +199,10 @@ ___
 
 ### Разблокировка пользователя
 
-- Синтаксис: `gwg user unblock <alias>`
+- Синтаксис: `sudo gwg user unblock <alias>`
 
 ```bash
-gwg user unblock test
+sudo gwg user unblock test
 ___
 [Peer]
 # Name = test
@@ -233,10 +242,10 @@ gwg tc service show    - посмотреть текущую конфигур�
 
 #### Включение модуля с полосой пропускания
 
-- Синтаксис: `gwg tc service up --speed <скорость> --max-speed <максимальная скорость>`
+- Синтаксис: `sudo gwg tc service up --speed <скорость> --max-speed <максимальная скорость>`
 
 ```bash
-gwg tc service up --speed 5Mbit --max-speed 8Mbit
+sudo gwg tc service up --speed 5Mbit --max-speed 8Mbit
 Classes not configured
 Filters not configured
 Tc config file generated successfully
@@ -249,9 +258,10 @@ Gwg tc service started
 
 #### Выключение модуля TC
 
-Синтаксис: `gwg tc service down`
+Синтаксис: `sudo gwg tc service down`
 
 ```bash
+sudo gwg tc service down
 Removed /etc/systemd/system/multi-user.target.wants/tc.service.
 Gwg tc service down
 ```
@@ -260,11 +270,11 @@ Gwg tc service down
 
 #### Перезапись конфигурации
 
-Синтаксис: `gwg tc service restart`
+Синтаксис: `sudo gwg tc service restart`
 Необходима после изменения `tc bandwidth` или `tc filter`. Для применения изменений необходимо перезапустить службу.
 
 ```bash
-gwg tc service restart
+sudo gwg tc service restart
 Tc config file generated successfully
 Tc executable file generated successfully
 Gwg tc service restarted
@@ -272,9 +282,10 @@ Gwg tc service restarted
 
 #### Просмотр текущей конфигурации
 
-Синтаксис: `gwg tc service show`
+Синтаксис: `sudo gwg tc service show`
 
 ```bash
+sudo gwg tc service show
 Gwg tc service:
 	FullSpeed: 8Mbit
 	Speed: 5Mbit
@@ -303,10 +314,10 @@ gwg tc bandwidth list   - просмотр существующих классо
 
 #### Создание полосы пропускания
 
-Синтаксис: `gwg tc bandwidth add <название> --min <мин. скорость> --ceil <макс. скорость>`
+Синтаксис: `sudo gwg tc bandwidth add <название> --min <мин. скорость> --ceil <макс. скорость>`
 
 ```bash
-gwg tc bandwidth add regular --min 2Mbit --ceil 3Mbit
+sudo gwg tc bandwidth add regular --min 2Mbit --ceil 3Mbit
 class: 2
 	description: regular;
 	min-rate: 2Mbit;
@@ -316,9 +327,10 @@ Added successfully
 
 #### Просмотр созданных полос пропускания
 
-Синтаксис: `gwg tc bandwidth list`
+Синтаксис: `sudo gwg tc bandwidth list`
 
 ```bash
+sudo gwg tc bandwidth list
 class: 2
 	description: regular;
 	min-rate: 2Mbit;
@@ -332,10 +344,10 @@ class: 20
 
 #### Удаление полосы пропускания
 
-Синтаксис: `gwg tc bandwidth remove <class-id>`
+Синтаксис: `sudo gwg tc bandwidth remove <class-id>`
 
 ```bash
-gwg tc bandwidth remove 20
+sudo gwg tc bandwidth remove 20
 class: 20
 	description: demo;
 	min-rate: 20Mbit;
@@ -349,10 +361,10 @@ Removed successfully
 
 #### Создание фильтра
 
-Синтаксис: `gwg tc filter add <описание> --class <class-id> --user <имя пользователя>`
+Синтаксис: `sudo gwg tc filter add <описание> --class <class-id> --user <имя пользователя>`
 
 ```bash
-gwg tc filter add demo --class 2 --user test
+sudo gwg tc filter add demo --class 2 --user test
 filter: demo
 	user: 10.0.0.2/32;
 	class: 2;
@@ -361,10 +373,10 @@ Added successfully
 
 #### Просмотр созданных фильтров
 
-Синтаксис: `gwg tc filter list`
+Синтаксис: `sudo gwg tc filter list`
 
 ```bash
-gwg tc filter list
+sudo gwg tc filter list
 filter: demo
 	user: 10.0.0.2/32;
 	class: 2;
@@ -376,20 +388,20 @@ filter: demo2
 
 #### Удаление фильтра
 
-Синтаксис: `gwg tc filter remove <описание>`
+Синтаксис: `sudo gwg tc filter remove <описание>`
 
 ```bash
-gwg tc filter remove demo2
+sudo gwg tc filter remove demo2
 filter: demo2
 	user: 10.0.0.2/32;
 	class: 2;
 Removed successfully
 ```
 
-После изменения `gwg tc bandwidth` и `gwg tc filter` необходимо перечитать конфигурацию: `gwg tc service restart`.
+После изменения `gwg tc bandwidth` и `gwg tc filter` необходимо перечитать конфигурацию: `sudo gwg tc service restart`.
 
 ```bash
-gwg tc service show
+sudo gwg tc service show
 Gwg tc service:
 	FullSpeed: 8Mbit
 	Speed: 5Mbit

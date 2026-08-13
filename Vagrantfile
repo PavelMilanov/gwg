@@ -5,8 +5,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "server" do |server|
     server.vm.hostname = "server"
-    server.vm.provision "file", source: "./src/gwg", destination: "/home/vagrant/gwg"
-    server.vm.provision "shell", inline: "chmod 0755 /home/vagrant/gwg"
   end
 
   config.vm.define "external-1" do |server|

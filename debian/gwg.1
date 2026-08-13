@@ -11,6 +11,10 @@ creates and maintains WireGuard server and peer configuration. Installing the
 Debian package does not create a service account or initialize a server.
 Administrative commands are run through sudo. Initialization is an explicit
 administrative operation.
+.SH PRIVILEGES
+Commands that read or modify /etc/wireguard or manage WireGuard and traffic
+control must be run through sudo. Help, version and completion generation do
+not require root privileges.
 .SH COMMANDS
 .TP
 .B init

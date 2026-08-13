@@ -1,1 +1,2 @@
 debian/build/gwg usr/bin
+debian/build/completions/gwg usr/share/bash-completion/completions

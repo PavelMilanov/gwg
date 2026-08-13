@@ -19,6 +19,7 @@ Depends:
  sudo,
  systemd,
  wireguard-tools
+Recommends: bash-completion
 Description: command-line manager for WireGuard servers
  gwg initializes and administers a WireGuard server, manages peers,
  displays transfer statistics and configures per-peer traffic limits.

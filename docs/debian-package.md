@@ -4,7 +4,7 @@
 
 Debian-пакет выполняет только две задачи:
 
-1. Устанавливает исполняемый файл `/usr/bin/gwg` и документацию.
+1. Устанавливает исполняемый файл `/usr/bin/gwg`, Bash completion и документацию.
 2. Объявляет runtime-зависимости, которые APT устанавливает автоматически.
 
 Пакет не создает пользователей или группы, не меняет владельца
@@ -22,12 +22,18 @@ sudo gwg init
 `/etc/sysctl.d/90-gwg.conf`, включает IPv4 forwarding и устанавливает сервер
 `wg0` с сетью `10.0.0.1/24` и UDP-портом `51830`.
 
+Каталог `/etc/wireguard` принадлежит `root:root` и имеет права `0700`. Поэтому
+все команды `gwg`, которые читают или изменяют конфигурацию, управляют
+WireGuard либо TC, необходимо запускать через `sudo`. Без `sudo` запускаются
+только `gwg --help`, `gwg version` и `gwg completion`.
+
 ## Runtime-зависимости
 
 Зависимости перечислены в `debian/control`:
 
 | Пакет | Назначение |
 | --- | --- |
+| `bash-completion` | Автодополнение команд `gwg` в Bash (Recommends) |
 | `wireguard-tools` | Команды `wg` и `wg-quick` |
 | `iproute2` | Команды `ip` и `tc` |
 | `iptables` | NAT и маршрутизация WireGuard |
@@ -169,9 +175,10 @@ dpkg-deb --contents ../gwg_0.3.1-1_amd64.deb
 lintian ../gwg_0.3.1-1_amd64.changes
 ```
 
-В основном пакете должны находиться `/usr/bin/gwg`, man-страница и
-документация. Пакет не должен содержать maintainer script, создающий
-пользователя или меняющий владельца `/etc/wireguard`.
+В основном пакете должны находиться `/usr/bin/gwg`, man-страница, документация
+и `/usr/share/bash-completion/completions/gwg`. Пакет не должен содержать
+maintainer script, создающий пользователя или меняющий владельца
+`/etc/wireguard`.
 
 ## Установка
 
@@ -185,9 +192,16 @@ sudo apt install ./gwg_0.3.1-1_amd64.deb
 После установки можно проверить зависимости и версию:
 
 ```bash
-dpkg-query -W gwg wireguard-tools iproute2 iptables procps systemd sudo
+dpkg-query -W gwg bash-completion wireguard-tools iproute2 iptables procps systemd sudo
 stat -c '%U:%G %a %n' /etc/wireguard
 gwg version
+```
+
+После открытия новой Bash-сессии можно проверить completion:
+
+```bash
+type _gwg
+sudo gwg server <TAB><TAB>
 ```
 
 Ожидаемые владелец и права каталога:

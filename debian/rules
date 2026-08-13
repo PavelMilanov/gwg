@@ -9,8 +9,9 @@ DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 	dh $@
 
 override_dh_auto_build:
-	mkdir -p debian/build
+	mkdir -p debian/build/completions
 	cd src && go build -trimpath -buildmode=pie -ldflags="-X github.com/PavelMilanov/go-wg-manager/cmd.Version=$(VERSION)" -o ../debian/build/gwg .
+	debian/build/gwg completion bash > debian/build/completions/gwg
 
 override_dh_auto_test:
 	cd src && go test ./...
