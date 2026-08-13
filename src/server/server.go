@@ -1,14 +1,12 @@
 package server
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/PavelMilanov/go-wg-manager/internal/atomicfile"
 )
@@ -20,7 +18,7 @@ func writeServerConfig(config WgServerConfig, filename string) error {
 	if err := validateServerConfig(config); err != nil {
 		return err
 	}
-	return writeTemplate(configPath(serverDir, filename, ".conf"), SERVER_TEMPLATE, config, 0600)
+	return writeTemplate(configPath(serverDir, filename, ".conf"), serverTemplate, config, 0600)
 }
 
 func writeClientConfig(config UserConfig, filename string) error {
@@ -30,19 +28,15 @@ func writeClientConfig(config UserConfig, filename string) error {
 	if err := validateUserConfig(config); err != nil {
 		return err
 	}
-	return writeTemplate(configPath(usersDir, filename, ".conf"), CLIENT_TEMPLATE, config, 0600)
+	return writeTemplate(configPath(usersDir, filename, ".conf"), clientTemplate, config, 0600)
 }
 
-func writeTemplate(path, source string, value any, perm os.FileMode) error {
-	templ, err := template.New(filepath.Base(path)).Parse(source)
+func writeTemplate(path string, tmpl configTemplate, value any, perm os.FileMode) error {
+	output, err := tmpl.render(value)
 	if err != nil {
-		return fmt.Errorf("parse template for %s: %w", path, err)
+		return err
 	}
-	var output bytes.Buffer
-	if err := templ.Execute(&output, value); err != nil {
-		return fmt.Errorf("render template for %s: %w", path, err)
-	}
-	return atomicfile.Write(path, output.Bytes(), perm)
+	return atomicfile.Write(path, output, perm)
 }
 
 func ReadServerConfigFile() (WgServerConfig, error) {
@@ -266,6 +260,9 @@ func InstallServer(alias, network string, port int) error {
 			return fmt.Errorf("create directory %s: %w", dir, err)
 		}
 	}
+	if err := ensureConfigTemplates(); err != nil {
+		return err
+	}
 	metadataPath := configPath(managerDir, alias, ".json")
 	if _, err := os.Stat(metadataPath); err == nil {
 		return fmt.Errorf("server %q is already configured", alias)
@@ -330,6 +327,21 @@ func ReadWgDump() error {
 	return nil
 }
 
+func ListUsers() error {
+	users, err := ReadClientConfigFiles()
+	if err != nil {
+		return err
+	}
+	for _, user := range users {
+		status := user.Status
+		if status == "" {
+			status = "blocked"
+		}
+		fmt.Printf("%s\t%s\t%s\n", user.Name, user.ClientLocalAddress, status)
+	}
+	return nil
+}
+
 func ConfigureSystem() error {
 	if err := initSystem(); err != nil {
 		return err
@@ -351,6 +363,9 @@ func prepareSystem() error {
 		if err := os.Chmod(dir, 0700); err != nil {
 			return fmt.Errorf("set permissions on directory %s: %w", dir, err)
 		}
+	}
+	if err := ensureConfigTemplates(); err != nil {
+		return err
 	}
 	if err := atomicfile.Write(sysctlFile, []byte("net.ipv4.ip_forward=1\n"), 0644); err != nil {
 		return fmt.Errorf("configure IPv4 forwarding: %w", err)

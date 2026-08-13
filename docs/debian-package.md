@@ -7,8 +7,10 @@ Debian-пакет выполняет только две задачи:
 1. Устанавливает исполняемый файл `/usr/bin/gwg` и документацию.
 2. Объявляет runtime-зависимости, которые APT устанавливает автоматически.
 
-Пакет не создает WireGuard-интерфейс, не генерирует ключи, не изменяет
-`sysctl`, не запускает службы и не вызывает `gwg init` из maintainer scripts.
+Пакет не создает пользователей или группы, не меняет владельца
+`/etc/wireguard`, не создает WireGuard-интерфейс, не генерирует ключи, не
+изменяет `sysctl`, не запускает службы и не вызывает `gwg init` из maintainer
+scripts. Административные команды `gwg` выполняются через `sudo`.
 
 Инициализация сервера выполняется пользователем отдельно:
 
@@ -61,29 +63,86 @@ dpkg-buildpackage -us -uc -b -d
 `golang-any` версии 1.26 или новее, следует использовать обычную команду без
 `-d`.
 
-## Версия пакета
+## Версии
 
-Версия задается первой записью `debian/changelog`:
+При сборке используются два значения версии:
+
+| Значение | Источник | Назначение |
+| --- | --- | --- |
+| Версия Debian-пакета | аргумент `version` или `debian/changelog` | Метаданные и имя файла `.deb` |
+| Версия приложения | аргумент `version` или `debian/changelog` | Вывод команды `gwg version` |
+
+Версия Debian-пакета задается первой записью `debian/changelog`:
 
 ```text
-gwg (0.2.6.4-1) unstable; urgency=medium
+gwg (0.3.1-1) unstable; urgency=medium
 ```
 
-Здесь `0.2.6.4` — версия программы, а `-1` — ревизия Debian-пакета. Версия
-программы автоматически встраивается в бинарник через `main.VERSION`.
+Здесь `0.3.1` — версия программы, а `-1` — ревизия Debian-пакета. При обычной
+сборке `debian/rules` берет `0.3.1` из changelog и встраивает ее в
+`cmd.Version`.
 
-Для нового выпуска следует добавить запись командой:
+Для нового выпуска сначала добавьте версию Debian-пакета в changelog:
 
 ```bash
-dch -v 0.2.6.5-1 "Release 0.2.6.5"
+dch -v 0.3.1-1 "Release 0.3.1"
 ```
+
+Цель `deb` собирает пакет и передает версию в Go-бинарник:
+
+```bash
+make deb version=0.3.1
+```
+
+Значение передается в `debian/rules` через переменную окружения `VERSION`, а
+затем встраивается в бинарник через Go `ldflags` и передается в
+`dh_gencontrol`. Поэтому аргумент задает как версию приложения, так и версию и
+имя `.deb`. Аргумент `version` обязателен, `debian/changelog` не изменяется.
 
 ## Сборка
 
-Из корня репозитория:
+Эквивалентная команда без Make, использующая версию приложения из changelog:
 
 ```bash
 dpkg-buildpackage -us -uc -b
+```
+
+Основная команда сборки проекта требует явную версию Go-бинарника:
+
+```bash
+make deb version=0.3.1
+```
+
+Эта цель запускает `dpkg-buildpackage` с параметром `-d`, поскольку Go может
+быть установлен отдельно и не зарегистрирован в `dpkg` как пакет `golang-any`.
+Перед сборкой необходимо самостоятельно проверить `go version`; остальные
+сборочные инструменты по-прежнему должны быть установлены.
+
+Например, `make deb version=0.3.1` создаст `gwg_0.3.1_amd64.deb`, а установленная
+из него команда `gwg version` покажет `0.3.1`. Для официального Debian-релиза
+рекомендуется также добавить соответствующую запись в changelog.
+
+Значение `dev` нельзя напрямую использовать как Debian-версию: поле `Version`
+должно начинаться с цифры. Поэтому команда:
+
+```bash
+make deb version=dev
+```
+
+встраивает `dev` в Go-бинарник, но использует Debian-версию `0~dev` и создает
+файл `gwg_0~dev_amd64.deb`.
+
+Основной пакет после сборки копируется в каталог `vagrant/share`. Дефолтный путь
+задается в начале `Makefile`:
+
+```make
+DEB_OUTPUT_DIR ?= vagrant/share
+```
+
+Путь можно переопределить без изменения `Makefile`:
+
+```bash
+make deb version=0.3.1 DEB_OUTPUT_DIR=dist
 ```
 
 Перед созданием пакета `debian/rules` переходит в `src` и выполняет:
@@ -97,22 +156,22 @@ go build -trimpath -buildmode=pie ...
 Готовые файлы создаются в родительском каталоге, например:
 
 ```text
-../gwg_0.2.6.4-1_amd64.deb
-../gwg-dbgsym_0.2.6.4-1_amd64.deb
-../gwg_0.2.6.4-1_amd64.changes
+../gwg_0.3.1-1_amd64.deb
+../gwg-dbgsym_0.3.1-1_amd64.deb
+../gwg_0.3.1-1_amd64.changes
 ```
 
 ## Проверка содержимого
 
 ```bash
-dpkg-deb --info ../gwg_0.2.6.4-1_amd64.deb
-dpkg-deb --contents ../gwg_0.2.6.4-1_amd64.deb
-lintian ../gwg_0.2.6.4-1_amd64.changes
+dpkg-deb --info ../gwg_0.3.1-1_amd64.deb
+dpkg-deb --contents ../gwg_0.3.1-1_amd64.deb
+lintian ../gwg_0.3.1-1_amd64.changes
 ```
 
 В основном пакете должны находиться `/usr/bin/gwg`, man-страница и
-документация. В пакете не должно быть `postinst`, `preinst`, `prerm` или
-`postrm`, выполняющих настройку сервера.
+документация. Пакет не должен содержать maintainer script, создающий
+пользователя или меняющий владельца `/etc/wireguard`.
 
 ## Установка
 
@@ -120,14 +179,21 @@ lintian ../gwg_0.2.6.4-1_amd64.changes
 разрешает и скачивает зависимости:
 
 ```bash
-sudo apt install ./gwg_0.2.6.4-1_amd64.deb
+sudo apt install ./gwg_0.3.1-1_amd64.deb
 ```
 
 После установки можно проверить зависимости и версию:
 
 ```bash
 dpkg-query -W gwg wireguard-tools iproute2 iptables procps systemd sudo
+stat -c '%U:%G %a %n' /etc/wireguard
 gwg version
+```
+
+Ожидаемые владелец и права каталога:
+
+```text
+root:root 700 /etc/wireguard
 ```
 
 Сервер на этом этапе еще не настроен.
@@ -143,7 +209,7 @@ sudo gwg init
 Для явного задания параметров вместо `init`:
 
 ```bash
-sudo gwg install -name wg0 -network 10.0.0.1/24 -port 51830
+sudo gwg server install --name wg0 --network 10.0.0.1/24 --port 51830
 ```
 
 После инициализации:
@@ -177,10 +243,10 @@ sudo apt remove gwg
 Скопируйте пакет в общий каталог и установите его на серверной VM:
 
 ```bash
-cp ../gwg_0.2.6.4-1_amd64.deb vagrant/share/
+cp ../gwg_0.3.1-1_amd64.deb vagrant/share/
 vagrant up server
 vagrant ssh server
-sudo apt install /home/vagrant/share/gwg_0.2.6.4-1_amd64.deb
+sudo apt install /home/vagrant/share/gwg_0.3.1-1_amd64.deb
 sudo gwg init
 ```
 

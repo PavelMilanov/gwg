@@ -26,12 +26,14 @@
   [релизов](https://github.com/PavelMilanov/gwg/releases).
 
 ```bash
-sudo apt install ./gwg_0.2.6.4-1_amd64.deb
+sudo apt install ./gwg_0.3.1-1_amd64.deb
 ```
 
 - APT установит `gwg` и необходимые зависимости: `wireguard-tools`,
   `iproute2`, `iptables`, `procps`, `systemd` и `sudo`. Установка пакета не
-  изменяет сетевую конфигурацию и не запускает WireGuard.
+  изменяет сетевую конфигурацию, не запускает WireGuard и не создает системного
+  пользователя. Каталог `/etc/wireguard` остается доступен только `root`,
+  поэтому административные команды выполняются через `sudo`.
 
 - Инициализировать сервер отдельной командой:
 
@@ -45,9 +47,40 @@ sudo gwg init
 Подробная документация по сборке и устройству пакета находится в
 [`docs/debian-package.md`](./docs/debian-package.md).
 
+Шаблоны серверной и клиентской WireGuard-конфигурации можно просматривать,
+заменять и восстанавливать командами `gwg template`. Рабочие файлы находятся в
+`/etc/wireguard/.wg_manager/templates`; список полей и порядок применения
+описаны в [`docs/config-templates.md`](./docs/config-templates.md).
+
 Исходный Go-модуль находится в каталоге [`src`](./src). Локальная сборка и
 тестирование из корня репозитория выполняются командами `make build` и
 `make test`.
+
+## Сборка
+
+Собрать обычный Go-бинарник с указанной версией:
+
+```bash
+make build version=0.3.1
+./gwg version
+```
+
+Собрать Debian-пакет и передать эту же версию в Go-бинарник:
+
+```bash
+make deb version=0.3.1
+```
+
+Аргумент `version` встраивается в бинарник и выводится командой `gwg version`.
+Он также задает Debian-поле `Version` и входит в имя `.deb`; команда `make deb`
+не изменяет `debian/changelog`. Готовый пакет копируется в `vagrant/share`.
+Для `version=dev` бинарник получает версию `dev`, а пакет — допустимую в Debian
+версию `0~dev`, поэтому файл называется `gwg_0~dev_amd64.deb`.
+Другой каталог можно указать через `DEB_OUTPUT_DIR`, например
+`make deb version=0.3.1 DEB_OUTPUT_DIR=dist`. Make-сборка использует установленный
+Go toolchain и отключает только предварительную проверку Debian Build-Depends
+параметром `dpkg-buildpackage -d`. Подробности находятся в
+[`docs/debian-package.md`](./docs/debian-package.md).
 
 ## Обновление
 
@@ -68,26 +101,27 @@ sudo apt install ./gwg_NEW_VERSION_amd64.deb
 
 ```bash
 gwg -h
-Описание: gwg - cli-менеджер wireguard:
+Менеджер WireGuard-сервера
 
-gwg show    - просмотр состояния wireguard-сервера.
-gwg stat    - просмотр подробной статистики wireguard-сервера. 
-gwg add     - добавления пользователя.
-gwg remove  - удаление пользователя.
-gwg block   - блокировка пользователя.
-gwg unblock - разблокировка пользователя.
-gwg tc      - модуль управления трафиком. (По-умолчанию выключен).
-gwg ssp     - режим прокси-сервера. (По-умолчанию выключен).
+Usage:
+  gwg [command]
 
-Помощь: gwg <command> -h
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  init        Подготовить систему и создать сервер wg0
+  server      Управление WireGuard-сервером
+  template    Управление шаблонами WireGuard
+  tc          Управление ограничениями трафика
+  user        Управление пользователями WireGuard
+  version     Показать версии gwg и Go
 ```
 
 ### Просмотр состояния подключений
 
-- Синтаксис: `gwg show`
+- Синтаксис: `gwg server show`
 
 ```bash
-gwg show
+gwg server show
 
 interface: wg0
   public key: 9zsArCzVC7kBWtvSkF4HBxSGlOvFU0StZSNvrXwVbAM=
@@ -103,19 +137,19 @@ peer: 68upH1Bn0h1xy+Nuj61qtYRBGummuGBA2cU12xxbHiw=
 
 ### Просмотр подробной статистики
 
-- Синтаксис: `gwg stat`
+- Синтаксис: `gwg server stat`
 
 ```bash
-gwg stat
+gwg server stat
 1) User: test, Ip: 10.0.0.2/32 , Resieve: 659724, Sent: 9550044
 ```
 
 ### Добавление пользователя
 
-- Синтаксис: `gwg add -name <alias>`
+- Синтаксис: `gwg user add <alias>`
 
 ```bash
-gwg add -name test2
+gwg user add test2
 ____
 [Peer]
 # Name = test
@@ -130,10 +164,10 @@ AllowedIPs = 10.0.0.3/32
 
 ### Удаление пользователя
 
-- Синтаксис: `gwg remove -name <alias>`
+- Синтаксис: `gwg user remove <alias>`
 
 ```bash
-gwg remove -name test2
+gwg user remove test2
 ___
 [Peer]
 # Name = test
@@ -143,10 +177,10 @@ AllowedIPs = 10.0.0.2/32
 
 ### Блокировка пользователя
 
-- Синтаксис: `gwg block -name <alias>`
+- Синтаксис: `gwg user block <alias>`
 
 ```bash
-gwg block -name test
+gwg user block test
 ___
 # [Peer]
 # Name = test
@@ -156,10 +190,10 @@ ___
 
 ### Разблокировка пользователя
 
-- Синтаксис: `gwg unblock -name <alias>`
+- Синтаксис: `gwg user unblock <alias>`
 
 ```bash
-gwg unblock -name test
+gwg user unblock test
 ___
 [Peer]
 # Name = test
@@ -177,10 +211,10 @@ gwg tc -h
 Описание: подсистема классификации трафика по разрешенной полосе пропускания.
 
 gwg tc service - управление службой gwg traffic control.
-gwg tc bw      - управление классами gwg traffic control.
-gwg tc ft      - управление фильтрами gwg traffic control.
+gwg tc bandwidth - управление классами gwg traffic control.
+gwg tc filter    - управление фильтрами gwg traffic control.
 
-Помощь: gwg tc (service|bw|ft) -h
+Помощь: gwg tc (service|bandwidth|filter) -h
 ```
 
 ### tc service
@@ -199,10 +233,10 @@ gwg tc service show    - посмотреть текущую конфигур�
 
 #### Включение модуля с полосой пропускания
 
-- Синтаксис: `gwg tc service up -s <скорость> -ms <максимальная скорость>`
+- Синтаксис: `gwg tc service up --speed <скорость> --max-speed <максимальная скорость>`
 
 ```bash
-gwg tc service up -s 5Mbit -ms 8Mbit
+gwg tc service up --speed 5Mbit --max-speed 8Mbit
 Classes not configured
 Filters not configured
 Tc config file generated successfully
@@ -227,7 +261,7 @@ Gwg tc service down
 #### Перезапись конфигурации
 
 Синтаксис: `gwg tc service restart`
-Необходима в том случае, если были добавлены/ удалены `tc bw` или `tc ft`. Для применения изменений необходимо перезапустить службу
+Необходима после изменения `tc bandwidth` или `tc filter`. Для применения изменений необходимо перезапустить службу.
 
 ```bash
 gwg tc service restart
@@ -238,7 +272,7 @@ Gwg tc service restarted
 
 #### Просмотр текущей конфигурации
 
-Синтаксис: `gwg tc service restart`
+Синтаксис: `gwg tc service show`
 
 ```bash
 Gwg tc service:
@@ -252,27 +286,27 @@ Gwg tc service:
 
 ***Перед созданием правил ограничения трафика, необходимо создать саму полосу пропускания!***
 
-### tc bw
+### tc bandwidth
 
-`gwg tc bw` - абстракция над `tc class`, позволяющая создавать полосы пропускания
+`gwg tc bandwidth` - абстракция над `tc class`, позволяющая создавать полосы пропускания
 
 ```bash
-gwg tc bw -h
-Описание: tc bw - классификатор для задания ограничения скорости.
+gwg tc bandwidth -h
+Описание: tc bandwidth - классификатор для задания ограничения скорости.
 
-gwg tc bw add    - создать новый класс gwg traffic control.
-gwg tc bw remove - удалить класс gwg traffic control.
-gwg tc bw show   - просмотр существующих классов gwg traffic control.
+gwg tc bandwidth add    - создать новый класс gwg traffic control.
+gwg tc bandwidth remove - удалить класс gwg traffic control.
+gwg tc bandwidth list   - просмотр существующих классов gwg traffic control.
 
-Помощь: gwg tc bw (add|remove|show) -h
+Помощь: gwg tc bandwidth (add|remove|list) -h
 ```
 
 #### Создание полосы пропускания
 
-Синтаксис: `gwg tc bw add -d <название п/п> -m <мин. ск-ть> -c <макс. скорость>`
+Синтаксис: `gwg tc bandwidth add <название> --min <мин. скорость> --ceil <макс. скорость>`
 
 ```bash
-gwg tc bw add -d regular -m 2Mbit -c 3Mbit
+gwg tc bandwidth add regular --min 2Mbit --ceil 3Mbit
 class: 2
 	description: regular;
 	min-rate: 2Mbit;
@@ -282,7 +316,7 @@ Added successfully
 
 #### Просмотр созданных полос пропускания
 
-Синтаксис: `gwg tc bw show`
+Синтаксис: `gwg tc bandwidth list`
 
 ```bash
 class: 2
@@ -298,10 +332,10 @@ class: 20
 
 #### Удаление полосы пропускания
 
-Синтаксис: `gwg tc bw remove -id <class: id>`
+Синтаксис: `gwg tc bandwidth remove <class-id>`
 
 ```bash
-gwg tc bw remove -id 20
+gwg tc bandwidth remove 20
 class: 20
 	description: demo;
 	min-rate: 20Mbit;
@@ -309,16 +343,16 @@ class: 20
 Removed successfully
 ```
 
-### tc ft
+### tc filter
 
-`gwg tc ft` - абстракция над `tc filter`, позволяющая создавать правила фильтрации для классифицированного ранее трафика
+`gwg tc filter` - управление правилами классификации пользовательского трафика.
 
 #### Создание фильтра
 
-Синтаксис: `gwg tc ft add -d <описание> -c <class: id> -u <имя пользователя>`
+Синтаксис: `gwg tc filter add <описание> --class <class-id> --user <имя пользователя>`
 
 ```bash
-gwg tc ft add -d demo -c 2 -u test
+gwg tc filter add demo --class 2 --user test
 filter: demo
 	user: 10.0.0.2/32;
 	class: 2;
@@ -327,10 +361,10 @@ Added successfully
 
 #### Просмотр созданных фильтров
 
-Синтаксис: `gwg tc ft show`
+Синтаксис: `gwg tc filter list`
 
 ```bash
-gwg tc ft show
+gwg tc filter list
 filter: demo
 	user: 10.0.0.2/32;
 	class: 2;
@@ -342,17 +376,17 @@ filter: demo2
 
 #### Удаление фильтра
 
-Синтаксис: `gwg tc ft remove -id <filter: id>`
+Синтаксис: `gwg tc filter remove <описание>`
 
 ```bash
-gwg tc ft remove -id demo2
+gwg tc filter remove demo2
 filter: demo2
 	user: 10.0.0.2/32;
 	class: 2;
 Removed successfully
 ```
 
-После создания `gwg tc bw` и `gwg tc ft` необходимо перечитать конфигурацию: `gwg tc service restart`.
+После изменения `gwg tc bandwidth` и `gwg tc filter` необходимо перечитать конфигурацию: `gwg tc service restart`.
 
 ```bash
 gwg tc service show

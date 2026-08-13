@@ -2,17 +2,23 @@
 
 export CGO_ENABLED := 0
 
-VERSION := $(shell dpkg-parsechangelog -SVersion | sed 's/-[^-]*$$//')
+VERSION ?= $(shell dpkg-parsechangelog -SVersion | sed 's/-[^-]*$$//')
+DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
 %:
 	dh $@
 
 override_dh_auto_build:
 	mkdir -p debian/build
-	cd src && go build -trimpath -buildmode=pie -ldflags="-X main.VERSION=$(VERSION)" -o ../debian/build/gwg .
+	cd src && go build -trimpath -buildmode=pie -ldflags="-X github.com/PavelMilanov/go-wg-manager/cmd.Version=$(VERSION)" -o ../debian/build/gwg .
 
 override_dh_auto_test:
 	cd src && go test ./...
+
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(DEB_VERSION)
+
+override_dh_auto_clean:
 
 override_dh_dwz:
 

@@ -8,7 +8,8 @@ gwg \- initialize and administer a WireGuard server
 .SH DESCRIPTION
 .B gwg
 creates and maintains WireGuard server and peer configuration. Installing the
-Debian package does not initialize a server. Initialization is an explicit
+Debian package does not create a service account or initialize a server.
+Administrative commands are run through sudo. Initialization is an explicit
 administrative operation.
 .SH COMMANDS
 .TP
@@ -16,26 +17,38 @@ administrative operation.
 Prepare system directories, enable IPv4 forwarding and initialize a default
 wg0 server. This command must be run as root.
 .TP
-.BI "install -name " interface " -network " prefix " -port " port
+.BI "server install --name " interface " --network " prefix " --port " port
 Create and start a WireGuard server with explicit parameters.
 .TP
-.BI "add -name " user
-Add a peer and generate its client configuration.
-.TP
-.BI "remove -name " user
-Remove a peer.
-.TP
-.BI "block -name " user
-Disable a peer without deleting its configuration.
-.TP
-.BI "unblock -name " user
-Enable a blocked peer.
-.TP
-.B show
+.BI "server show"
 Display WireGuard interface and peer state.
 .TP
-.B stat
+.BI "server stat"
 Display per-peer transfer counters.
+.TP
+.BI "user add " user
+Add a peer and generate its client configuration.
+.TP
+.BI "user remove " user
+Remove a peer.
+.TP
+.BI "user block " user
+Disable a peer without deleting its configuration.
+.TP
+.BI "user unblock " user
+Enable a blocked peer.
+.TP
+.B user list
+Display configured peers.
+.TP
+.BI "template show " "server|client"
+Display the current WireGuard configuration template.
+.TP
+.BI "template set " "server|client" " --file " path
+Replace a configuration template with the contents of a file.
+.TP
+.BI "template reset " "server|client"
+Restore the built-in configuration template.
 .TP
 .B tc
 Manage traffic-control classes, filters and service state.
@@ -53,6 +66,9 @@ sudo gwg init
 .TP
 .I /etc/wireguard
 WireGuard and gwg configuration files.
+.TP
+.I /etc/wireguard/.wg_manager/templates
+Editable server and client WireGuard configuration templates.
 .TP
 .I /etc/sysctl.d/90-gwg.conf
 IPv4 forwarding setting created by

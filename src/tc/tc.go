@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PavelMilanov/go-wg-manager/paths"
 	"github.com/PavelMilanov/go-wg-manager/server"
 )
 
@@ -131,7 +130,7 @@ func ShowService() error {
 }
 
 func serviceState() (string, error) {
-	out, err := commandRunner.Output("sudo", "systemctl", "is-enabled", paths.TC_SERVICE_FILE)
+	out, err := commandRunner.Output("sudo", "systemctl", "is-enabled", tcServiceFile)
 	return strings.TrimSpace(string(out)), err
 }
 
@@ -160,7 +159,7 @@ func AddBandwidth(description, minSpeed, ceilSpeed string) error {
 	classID := nextClassID(configs)
 	config := TcClass{Class: classID, Description: description, MinSpeed: minSpeed, CeilSpeed: ceilSpeed}
 	configs = append(configs, config)
-	if err := writeJSONFile(paths.TC_CLASS_FILE, configs); err != nil {
+	if err := writeJSONFile(classFile, configs); err != nil {
 		return err
 	}
 	printClass(config)
@@ -212,7 +211,7 @@ func RemoveBandwidth(classID string) error {
 	}
 	removed := configs[index]
 	configs = append(configs[:index], configs[index+1:]...)
-	if err := writeJSONFile(paths.TC_CLASS_FILE, configs); err != nil {
+	if err := writeJSONFile(classFile, configs); err != nil {
 		return err
 	}
 	printClass(removed)
@@ -287,7 +286,7 @@ func AddFilter(description, userName, classID string) error {
 	}
 	filter := TcFilter{Description: description, UserIp: userIP, Class: classID}
 	filters = append(filters, filter)
-	if err := writeJSONFile(paths.TC_FILTER_FILE, filters); err != nil {
+	if err := writeJSONFile(filterFile, filters); err != nil {
 		return err
 	}
 	printFilter(filter)
@@ -315,7 +314,7 @@ func RemoveFilter(description string) error {
 	}
 	removed := filters[index]
 	filters = append(filters[:index], filters[index+1:]...)
-	if err := writeJSONFile(paths.TC_FILTER_FILE, filters); err != nil {
+	if err := writeJSONFile(filterFile, filters); err != nil {
 		return err
 	}
 	printFilter(removed)
@@ -341,19 +340,19 @@ func printFilter(filter TcFilter) {
 
 func readClassFile() ([]TcClass, error) {
 	var classes []TcClass
-	err := readOptionalJSON(paths.TC_CLASS_FILE, &classes)
+	err := readOptionalJSON(classFile, &classes)
 	return classes, err
 }
 
 func readFilterFile() ([]TcFilter, error) {
 	var filters []TcFilter
-	err := readOptionalJSON(paths.TC_FILTER_FILE, &filters)
+	err := readOptionalJSON(filterFile, &filters)
 	return filters, err
 }
 
 func readTcFile() (TcConfig, error) {
 	var config TcConfig
-	path := filepath.Join(tcDir, paths.TC_FILE)
+	path := filepath.Join(tcDir, tcFile)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return TcConfig{}, fmt.Errorf("read tc configuration: %w", err)

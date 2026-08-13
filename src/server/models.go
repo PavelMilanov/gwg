@@ -5,15 +5,16 @@ import (
 	"fmt"
 
 	"github.com/PavelMilanov/go-wg-manager/internal/atomicfile"
-	"github.com/PavelMilanov/go-wg-manager/paths"
 )
 
+const defaultServerDir = "/etc/wireguard"
+
 var (
-	serverDir     = paths.SERVER_DIR
-	managerDir    = paths.WG_MANAGER_DIR
-	userConfigDir = paths.USERS_CONFIG_DIR
-	usersDir      = paths.USERS_DIR
-	tcConfigDir   = paths.TC_DIR
+	serverDir     = defaultServerDir
+	managerDir    = defaultServerDir + "/.wg_manager"
+	userConfigDir = defaultServerDir + "/.configs"
+	usersDir      = defaultServerDir + "/users"
+	tcConfigDir   = defaultServerDir + "/.tc"
 	sysctlFile    = "/etc/sysctl.d/90-gwg.conf"
 )
 

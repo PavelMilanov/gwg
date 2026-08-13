@@ -11,11 +11,19 @@ import (
 
 	"github.com/PavelMilanov/go-wg-manager/internal/atomicfile"
 	"github.com/PavelMilanov/go-wg-manager/internal/command"
-	"github.com/PavelMilanov/go-wg-manager/paths"
+)
+
+const (
+	defaultTcDir  = "/etc/wireguard/.tc"
+	classFile     = "classes"
+	filterFile    = "filters"
+	tcFile        = "tc"
+	tcConfigFile  = "tc.sh"
+	tcServiceFile = "tc.service"
 )
 
 var (
-	tcDir                        = paths.TC_DIR
+	tcDir                        = defaultTcDir
 	serviceDir                   = "/etc/systemd/system"
 	commandRunner command.Runner = command.ExecRunner{}
 )
@@ -50,7 +58,7 @@ func writeJSONFile(name string, value any) error {
 }
 
 func (tc *TcConfig) config() error {
-	return writeJSONFile(paths.TC_FILE, tc)
+	return writeJSONFile(tcFile, tc)
 }
 
 func (tc *TcConfig) generate() error {
@@ -62,7 +70,7 @@ func (tc *TcConfig) generate() error {
 	if err := templ.Execute(&output, tc); err != nil {
 		return fmt.Errorf("render tc script: %w", err)
 	}
-	return atomicfile.Write(filepath.Join(tcDir, paths.TC_CONFIG_FILE), output.Bytes(), 0700)
+	return atomicfile.Write(filepath.Join(tcDir, tcConfigFile), output.Bytes(), 0700)
 }
 
 func (tc *TcConfig) createService() error {
@@ -74,32 +82,32 @@ func (tc *TcConfig) createService() error {
 	if err := templ.Execute(&output, tc); err != nil {
 		return fmt.Errorf("render tc service: %w", err)
 	}
-	source := filepath.Join(tcDir, paths.TC_SERVICE_FILE)
+	source := filepath.Join(tcDir, tcServiceFile)
 	if err := atomicfile.Write(source, output.Bytes(), 0644); err != nil {
 		return err
 	}
-	destination := filepath.Join(serviceDir, paths.TC_SERVICE_FILE)
+	destination := filepath.Join(serviceDir, tcServiceFile)
 	if err := commandRunner.Run("sudo", "install", "-m", "0644", source, destination); err != nil {
 		return err
 	}
 	if err := commandRunner.Run("sudo", "systemctl", "daemon-reload"); err != nil {
 		return err
 	}
-	if err := commandRunner.Run("sudo", "systemctl", "enable", paths.TC_SERVICE_FILE); err != nil {
+	if err := commandRunner.Run("sudo", "systemctl", "enable", tcServiceFile); err != nil {
 		return err
 	}
-	return commandRunner.Run("sudo", "systemctl", "start", paths.TC_SERVICE_FILE)
+	return commandRunner.Run("sudo", "systemctl", "start", tcServiceFile)
 }
 
 func (tc *TcConfig) removeService() error {
-	disableErr := commandRunner.Run("sudo", "systemctl", "disable", "--now", paths.TC_SERVICE_FILE)
-	removeErr := commandRunner.Run("sudo", "rm", "-f", filepath.Join(serviceDir, paths.TC_SERVICE_FILE))
+	disableErr := commandRunner.Run("sudo", "systemctl", "disable", "--now", tcServiceFile)
+	removeErr := commandRunner.Run("sudo", "rm", "-f", filepath.Join(serviceDir, tcServiceFile))
 	reloadErr := commandRunner.Run("sudo", "systemctl", "daemon-reload")
 	return errors.Join(disableErr, removeErr, reloadErr)
 }
 
 func (tc *TcConfig) start() error {
-	return commandRunner.Run("sudo", filepath.Join(tcDir, paths.TC_CONFIG_FILE))
+	return commandRunner.Run("sudo", filepath.Join(tcDir, tcConfigFile))
 }
 
 func (tc *TcConfig) down() error {

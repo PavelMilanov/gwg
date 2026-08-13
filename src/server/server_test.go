@@ -202,6 +202,135 @@ func TestAddUserUpdatesConfigsAndRestartsSelectedInterface(t *testing.T) {
 	}
 }
 
+func TestCustomConfigTemplatesAreUsed(t *testing.T) {
+	configureTestDirectories(t)
+	templateDir := filepath.Join(managerDir, templatesDirName)
+	if err := os.MkdirAll(templateDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(serverTemplate.path(), []byte("server={{ .Alias }} users={{ len .Users }}\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(clientTemplate.path(), []byte("client={{ .Name }} address={{ .ClientLocalAddress }}\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	serverConfig := validTestServerConfig()
+	serverConfig.Users = []UserConfig{validTestUserConfig("alice", "10.7.0.2/32")}
+	if err := writeServerConfig(serverConfig, serverConfig.Alias); err != nil {
+		t.Fatal(err)
+	}
+	if err := writeClientConfig(serverConfig.Users[0], "alice"); err != nil {
+		t.Fatal(err)
+	}
+
+	serverData, err := os.ReadFile(filepath.Join(serverDir, "wg7.conf"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	clientData, err := os.ReadFile(filepath.Join(usersDir, "alice.conf"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(serverData) != "server=wg7 users=1\n" {
+		t.Fatalf("unexpected server configuration %q", serverData)
+	}
+	if string(clientData) != "client=alice address=10.7.0.2/32\n" {
+		t.Fatalf("unexpected client configuration %q", clientData)
+	}
+}
+
+func TestEnsureConfigTemplatesPreservesChanges(t *testing.T) {
+	configureTestDirectories(t)
+	if err := ensureConfigTemplates(); err != nil {
+		t.Fatal(err)
+	}
+	custom := []byte("custom server template\n")
+	if err := os.WriteFile(serverTemplate.path(), custom, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := ensureConfigTemplates(); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(serverTemplate.path())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != string(custom) {
+		t.Fatalf("server template was overwritten: %q", got)
+	}
+}
+
+func TestWriteAndResetConfigTemplate(t *testing.T) {
+	configureTestDirectories(t)
+	custom := []byte("client={{ .Name }}\n")
+	if err := WriteConfigTemplate("client", custom); err != nil {
+		t.Fatal(err)
+	}
+	got, err := ReadConfigTemplate("client")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != string(custom) {
+		t.Fatalf("client template = %q, want %q", got, custom)
+	}
+	if err := WriteConfigTemplate("client", []byte("{{")); err == nil {
+		t.Fatal("expected invalid-template error")
+	}
+	if err := WriteConfigTemplate("client", nil); err == nil {
+		t.Fatal("expected empty-template error")
+	}
+	got, err = ReadConfigTemplate("client")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != string(custom) {
+		t.Fatalf("invalid update replaced client template: %q", got)
+	}
+	if err := ResetConfigTemplate("client"); err != nil {
+		t.Fatal(err)
+	}
+	got, err = ReadConfigTemplate("client")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != defaultClientTemplate {
+		t.Fatalf("client template was not reset: %q", got)
+	}
+}
+
+func TestConfigTemplateRejectsUnknownName(t *testing.T) {
+	configureTestDirectories(t)
+	if _, err := ReadConfigTemplate("other"); err == nil {
+		t.Fatal("expected unknown-template error")
+	}
+}
+
+func TestInvalidCustomTemplateDoesNotReplaceConfiguration(t *testing.T) {
+	configureTestDirectories(t)
+	if err := ensureConfigTemplates(); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(serverTemplate.path(), []byte("{{ .UnknownField }}\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(serverDir, "wg7.conf")
+	if err := os.WriteFile(path, []byte("existing\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	err := writeServerConfig(validTestServerConfig(), "wg7")
+	if err == nil || !strings.Contains(err.Error(), "UnknownField") {
+		t.Fatalf("expected missing-field error, got %v", err)
+	}
+	got, readErr := os.ReadFile(path)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if string(got) != "existing\n" {
+		t.Fatalf("configuration changed after render error: %q", got)
+	}
+}
+
 func TestPrepareSystemCreatesPrivateDirectoriesAndEnablesForwarding(t *testing.T) {
 	configureTestDirectories(t)
 	fake := &fakeRunner{}
@@ -212,13 +341,22 @@ func TestPrepareSystemCreatesPrivateDirectoriesAndEnablesForwarding(t *testing.T
 	if err := prepareSystem(); err != nil {
 		t.Fatal(err)
 	}
-	for _, dir := range []string{serverDir, managerDir, userConfigDir, usersDir, tcConfigDir} {
+	for _, dir := range []string{serverDir, managerDir, userConfigDir, usersDir, tcConfigDir, filepath.Join(managerDir, templatesDirName)} {
 		info, err := os.Stat(dir)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if got := info.Mode().Perm(); got != 0700 {
 			t.Fatalf("permissions for %s = %o, want 700", dir, got)
+		}
+	}
+	for _, path := range []string{serverTemplate.path(), clientTemplate.path()} {
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := info.Mode().Perm(); got != 0600 {
+			t.Fatalf("permissions for %s = %o, want 600", path, got)
 		}
 	}
 	data, err := os.ReadFile(sysctlFile)

@@ -1,7 +1,8 @@
-gwg (0.2.6.4-1) unstable; urgency=medium
+gwg (0.3.0) unstable; urgency=medium
 
   * Add Debian package metadata.
   * Delegate runtime dependency installation to APT.
   * Keep WireGuard server initialization in gwg init.
+  * Replace manual CLI parsing with a Cobra command hierarchy.
 
  -- Pavel Milanov <milanov71@icloud.com>  Thu, 13 Aug 2026 10:08:36 +0300
