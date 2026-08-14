@@ -61,6 +61,11 @@ WireGuard-интерфейсами либо настройками TC, запу�
 `/etc/wireguard/.wg_manager/templates`; список полей и порядок применения
 описаны в [`docs/config-templates.md`](./docs/config-templates.md).
 
+Настройка нескольких внешних WireGuard-шлюзов, динамической active/active
+балансировки и автоматического исключения недоступных шлюзов через FRR/BGP
+описана в
+[`docs/dynamic-exit-routing.md`](./docs/dynamic-exit-routing.md).
+
 Исходный Go-модуль находится в каталоге [`src`](./src). Локальная сборка и
 тестирование из корня репозитория выполняются командами `make build` и
 `make test`.
