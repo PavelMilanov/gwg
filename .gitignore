@@ -1,7 +1,10 @@
-gwg
-gwg.tar.gz
+/gwu
+/gwg
+/gwg.tar.gz
+/gwu_*_linux_*.tar
+/.build/
 .obsidian
 .DS_Store
 .vagrant
-/debian/*
-vagrant/*
+/vagrant/share/*
+!/vagrant/share/.gitkeep

@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+export CGO_ENABLED := 0
+
+COMPONENT := $(shell dpkg-parsechangelog -SSource)
+
+ifeq ($(filter $(COMPONENT),gwu),)
+$(error unsupported Debian source package '$(COMPONENT)')
+endif
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	mkdir -p debian/build/completions
+	cd src && go build -trimpath -buildmode=pie -o ../debian/build/$(COMPONENT) ./cmd/$(COMPONENT)
+	debian/build/$(COMPONENT) completion bash > debian/build/completions/$(COMPONENT)
+
+override_dh_auto_test:
+	$(MAKE) test component=$(COMPONENT)
+
+override_dh_auto_clean:
+
+override_dh_dwz:
+
+override_dh_shlibdeps:

@@ -1,0 +1,12 @@
+[Interface]
+PrivateKey = {{ .ServerPrivateKey}}
+Address = {{ .LocalAddress}}
+ListenPort = {{ .ListenPort}}
+PostUp = nft 'create table ip {{ natTable .Alias }}; add chain ip {{ natTable .Alias }} postrouting { type nat hook postrouting priority srcnat; policy accept; }; add rule ip {{ natTable .Alias }} postrouting oifname "{{ .Eth }}" counter masquerade'
+PostDown = nft delete table ip {{ natTable .Alias }}
+{{ range .Users}}
+{{ if .Status}}[Peer]{{else}}# [Peer]{{end}}
+# Name = {{ .Name }}
+{{ if .Status}}PublicKey = {{ .ClientPublicKey}}{{else}}# PublicKey = {{ .ClientPublicKey}}{{end}}
+{{ if .Status}}AllowedIPs = {{ .ClientLocalAddress}}{{else}}# AllowedIPs = {{ .ClientLocalAddress}}{{end}}
+{{end}}

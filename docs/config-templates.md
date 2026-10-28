@@ -1,91 +1,69 @@
-# Шаблоны WireGuard
+# Шаблоны конфигураций
 
-`gwg` хранит изменяемые рабочие шаблоны в каталоге:
+Текстовые шаблоны встроены в бинарник через go:embed. При первом использовании
+они создаются на диске; существующие файлы не заменяются обновлением пакета.
 
-```text
-/etc/wireguard/.wg_manager/templates/
-```
+## WireGuard
 
-Файлы создаются при `sudo gwg init` или `sudo gwg server install`:
-
-| Файл | Назначение |
-| --- | --- |
-| `server.conf.tmpl` | Конфигурация WireGuard-сервера |
-| `client.conf.tmpl` | Конфигурация нового клиента |
-
-Встроенные в бинарник шаблоны используются только для первоначального создания
-файлов и команды `template reset`. Существующие файлы при повторном запуске не
-перезаписываются.
-
-Каталог шаблонов доступен только `root`, поэтому команды управления шаблонами
-необходимо запускать через `sudo`.
-
-## Управление
-
-Показать текущий шаблон:
+Каталог: `/etc/wireguard/gwu/wireguard/templates/`.
+Имена: `server.conf.tmpl`, `client.conf.tmpl`, `gateway.conf.tmpl`.
 
 ```bash
-sudo gwg template show server
-sudo gwg template show client
+sudo gwu wireguard template show server
+sudo gwu wireguard template set server --file ./server.conf.tmpl
+sudo gwu wireguard template reset server
 ```
 
-Заменить шаблон содержимым файла:
+Вместо server доступны client и gateway. Reset явно заменяет выбранный локальный
+шаблон встроенным; set заменяет содержимым файла. Эти команды сами не
+регенерируют рабочий конфиг, не применяют sysctl и не перезапускают WireGuard.
+Show может первоначально создать отсутствующие шаблоны.
 
-```bash
-sudo gwg template set server --file ./server.conf.tmpl
-sudo gwg template set client --file ./client.conf.tmpl
-```
+Set/reset проверяют синтаксис Go template, пробный рендеринг и синтаксис shell
+hooks через `bash -n`, без исполнения. Это не проверка сетевой семантики или
+произвольных условных веток. Локальный шаблон — доверенный код администратора:
+hooks будут исполняться при реальном запуске wg-quick.
 
-Перед записью программа проверяет синтаксис Go template. Файл заменяется
-атомарно и получает права `0600`.
+### Данные шаблонов
 
-Восстановить встроенный шаблон:
-
-```bash
-sudo gwg template reset server
-sudo gwg template reset client
-```
-
-Файлы также можно редактировать напрямую через `sudoedit`. Ошибка синтаксиса
-или обращение к отсутствующему полю останавливает генерацию и не повреждает уже
-существующую WireGuard-конфигурацию.
-
-## Поля серверного шаблона
-
-Серверный шаблон получает `WgServerConfig`:
-
-| Поле | Содержимое |
+| Шаблон | Поля |
 | --- | --- |
-| `.ServerPrivateKey` | Закрытый ключ сервера |
-| `.ServerPublicKey` | Открытый ключ сервера |
-| `.LocalAddress` | Локальный адрес и префикс WireGuard |
-| `.PublicAddress` | Публичный IPv4-адрес сервера |
-| `.ListenPort` | UDP-порт WireGuard |
-| `.Eth` | Внешний сетевой интерфейс |
-| `.Alias` | Имя WireGuard-интерфейса |
-| `.DnsResolv` | DNS для клиентов |
-| `.Users` | Список клиентов |
+| server | ServerPrivateKey, ServerPublicKey, LocalAddress, PublicAddress, ListenPort, Eth, Alias, DnsResolv, Users |
+| client и элементы Users | ClientPrivateKey, ClientPublicKey, ClientLocalAddress, ServerPublicKey, ServerIp, ServerPort, DnsResolv, Name, Status |
+| gateway | Получает серверную модель; встроенный шаблон задаёт net.ipv4.ip_forward=1 |
 
-Внутри `{{ range .Users }}` доступны поля клиентской конфигурации из следующего
-раздела. Пустой `.Status` означает заблокированного клиента, `active` — активного.
+Status равен `active` для активного клиента и пустой строке для заблокированного.
+Серверный шаблон использует `{{ range .Users }}`.
+Функция `natTable .Alias` строит безопасное имя nftables-таблицы.
 
-## Поля клиентского шаблона
+Исходные шаблоны:
 
-Клиентский шаблон получает `UserConfig`:
+- [server.conf.tmpl](../src/modules/wireguard/templates/server.conf.tmpl).
+- [client.conf.tmpl](../src/modules/wireguard/templates/client.conf.tmpl).
+- [gateway.conf.tmpl](../src/modules/wireguard/templates/gateway.conf.tmpl).
 
-| Поле | Содержимое |
-| --- | --- |
-| `.ClientPrivateKey` | Закрытый ключ клиента |
-| `.ClientPublicKey` | Открытый ключ клиента |
-| `.ClientLocalAddress` | Адрес клиента в WireGuard-сети |
-| `.ServerPublicKey` | Открытый ключ сервера |
-| `.ServerIp` | Публичный IPv4-адрес сервера |
-| `.ServerPort` | UDP-порт сервера |
-| `.DnsResolv` | DNS клиента |
-| `.Name` | Имя клиента |
-| `.Status` | `active` или пустая строка |
+Встроенный server template создаёт только NAT в отдельной nftables-таблице.
+FORWARD-разрешения и source rules в нём отсутствуют. Переход со старых
+iptables hooks требует отдельного согласования с установленным firewall.
 
-Измененный серверный шаблон применяется при следующей генерации серверной
-конфигурации, например при добавлении, блокировке или удалении пользователя.
-Измененный клиентский шаблон применяется только к клиентам, добавленным после
-изменения; существующие клиентские файлы автоматически не перезаписываются.
+При следующей операции пользователя серверный конфиг будет сгенерирован из
+текущего шаблона. Изменение client template влияет на новых клиентов и не
+переписывает уже выданные конфиги. Gateway применяется при системной подготовке
+init; не запускайте init для обновления существующего сервера.
+
+## QoS
+
+Каталог: `/etc/wireguard/gwu/qos/templates/`.
+Файлы: `channel.json.tmpl`, `qos.service.tmpl`.
+
+`gwu qos init --interface wg0 --rate 75Mbit` создаёт отсутствующий channel.json,
+проверяет его и генерирует unit. `gwu qos render` перечитывает реальный JSON
+и локальный шаблон unit, не меняя JSON и работающие очереди.
+Повторный init сохраняет существующий channel.json.
+
+Шаблонам доступны Interface, Rate и ConfigPath.
+Unit записывается в `/etc/wireguard/gwu/qos/generated/qos.service`.
+Генерация не означает установку или включение unit.
+
+Metadata WireGuard, рабочая QoS-конфигурация и ownership state хранятся как
+типизированный JSON; текстовые шаблоны не заменяют их модели.

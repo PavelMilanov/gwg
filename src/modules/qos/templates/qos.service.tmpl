@@ -1,0 +1,14 @@
+[Unit]
+Description=GWU QoS shared channel (Netlink prototype)
+After=wg-quick@{{.Interface}}.service
+Requires=wg-quick@{{.Interface}}.service
+PartOf=wg-quick@{{.Interface}}.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/gwu qos apply --config {{.ConfigPath}}
+ExecReload=/usr/bin/gwu qos apply --config {{.ConfigPath}}
+
+[Install]
+WantedBy=wg-quick@{{.Interface}}.service

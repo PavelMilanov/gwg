@@ -1,0 +1,122 @@
+.TH GWU 1 "October 2026" "gwu" "User Commands"
+.SH NAME
+gwu \- initialize and administer a WireGuard server
+.SH SYNOPSIS
+.B gwu
+.I command
+.RI [ options ]
+.SH DESCRIPTION
+.B gwu
+creates and maintains WireGuard server and peer configuration. Installing the
+Debian package does not create a service account or initialize a server.
+Administrative commands are run through sudo. Initialization is an explicit
+administrative operation.
+.SH PRIVILEGES
+Commands that read or modify /etc/wireguard or manage WireGuard and traffic
+control must be run through sudo. Help, version and completion generation do
+not require root privileges.
+.SH COMMANDS
+.TP
+.B wireguard init
+Prepare system directories, enable IPv4 forwarding and initialize a default
+wg0 server. This command must be run as root.
+.TP
+.BI "wireguard server install --name " interface " --network " prefix " --port " port
+Create and start a WireGuard server with explicit parameters.
+.TP
+.BI "wireguard user add " user
+Add a peer and generate its client configuration.
+.TP
+.BI "wireguard user remove " user
+Remove a peer.
+.TP
+.BI "wireguard user block " user
+Disable a peer without deleting its configuration.
+.TP
+.BI "wireguard user unblock " user
+Enable a blocked peer.
+.TP
+.B wireguard user list
+Display configured peers.
+.TP
+.BI "wireguard template show " "server|client|gateway"
+Display the current WireGuard configuration template.
+.TP
+.BI "wireguard template set " "server|client|gateway" " --file " path
+Replace a configuration template with the contents of a file.
+Validate template rendering and Bash hook syntax before replacing the file.
+Hooks are not executed during validation.
+.TP
+.BI "wireguard template reset " "server|client|gateway"
+Restore the built-in configuration template.
+This explicitly replaces local customizations but does not regenerate the
+running WireGuard configuration or restart an interface.
+.TP
+.BI "qos init --interface " interface " --rate " rate
+Generate channel.json and qos.service from local .tmpl without applying QoS.
+.TP
+.B qos render
+Rerender the generated unit from the module templates; preserve channel.json.
+.TP
+.BI "qos apply --config " path
+Apply a shared egress HTB/FQ-CoDel channel through Netlink. Update only the
+existing owned class when the rate changes. Does not install a service.
+.TP
+.BI "qos show --interface " interface
+Read actual channel state and ownership.
+.TP
+.BI "qos down --interface " interface
+Remove only the verified owned channel. Refuse unknown qdiscs and old layouts.
+.TP
+.B version
+Display gwu and Go versions.
+.SH INITIALIZATION
+The built-in server template uses native nftables for IPv4 masquerading.
+It creates a per-interface table named gwu_nat_ followed by the hexadecimal
+encoding of the interface name. It does not configure forwarding policy or
+source routing rules. An existing NAT table with that name causes startup
+to fail rather than being overwritten. Existing on-disk templates are not
+replaced by a package upgrade; updating them requires an explicit operation.
+.PP
+Install the package and its dependencies with APT, then initialize explicitly:
+.PP
+.nf
+sudo apt install ./gwu_VERSION_ARCH.deb
+sudo gwu wireguard init
+.fi
+.SH FILES
+.TP
+.I /etc/wireguard/gwu/wireguard
+Module metadata, client configurations, local templates and generated artifacts.
+Only the module layout is supported.
+.TP
+.I /etc/wireguard/gwu/qos/templates
+Editable channel.json.tmpl and qos.service.tmpl. Defaults are embedded.
+.TP
+.I /etc/wireguard/gwu/qos/generated/qos.service
+Generated unit for manual review. Never automatically installed or enabled.
+.TP
+.I /etc/wireguard/gwu/qos/channel.json
+Shared channel prototype configuration: interface and rate.
+No per-user bandwidth, upload shaping or ACL.
+.TP
+.I /etc/wireguard/gwu/qos/state
+Ownership records and a process lock. These are not proof against manual
+changes by root. Incomplete operations require explicit inspection/recovery.
+.TP
+.I /etc/wireguard
+Live wg-quick interface configuration files. Module-owned files live under
+/etc/wireguard/gwu/wireguard and /etc/wireguard/gwu/qos.
+.TP
+.I /etc/wireguard/gwu/wireguard/templates
+Editable server, client and gateway WireGuard module templates.
+.TP
+.I /etc/sysctl.d/90-gwu.conf
+IPv4 forwarding setting created by
+.BR "gwu wireguard init" .
+.SH SEE ALSO
+.BR wg (8),
+.BR wg-quick (8),
+.BR tc (8),
+.BR nft (8),
+.BR systemctl (1)

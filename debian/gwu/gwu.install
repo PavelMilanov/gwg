@@ -1,0 +1,2 @@
+debian/build/gwu usr/bin
+debian/build/completions/gwu usr/share/bash-completion/completions
